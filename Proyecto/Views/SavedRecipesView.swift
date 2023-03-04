@@ -7,13 +7,8 @@
 import SwiftUI
 
 struct SavedRecipesView: View {
-    let firestoreManager: FirebaseManager
-        @State var savedRecipes: [Recipe] = []
+    let savedRecipes: [Recipe]
 
-        init(firestoreManager: FirebaseManager) {
-            self.firestoreManager = firestoreManager
-        }
-    
     var body: some View {
         List(savedRecipes) { recipe in
             VStack(alignment: .leading) {
@@ -35,11 +30,6 @@ struct SavedRecipesView: View {
             }
         }
         .listStyle(.plain)
-        .onAppear {
-            firestoreManager.getSavedRecipes { recipes in
-                savedRecipes = recipes
-            }
-        }
     }
 }
 

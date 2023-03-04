@@ -6,34 +6,56 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ContentView: View {
     @StateObject var firestoreManager = FirebaseManager()
-    
-    let recipes = [
-        Recipe(title: "Spaghetti with Meatballs", image: "spaghetti", summary: "Delicious spaghetti with homemade meatballs"),
-        Recipe(title: "Grilled Chicken Caesar Salad", image: "salad", summary: "Fresh grilled chicken with crisp romaine lettuce and tangy Caesar dressing"),
-        Recipe(title: "Chocolate Chip Cookies", image: "cookies", summary: "Classic chocolate chip cookies, perfect for any occasion")
-    ]
+    @State var recipes = [Recipe]()
     
     var body: some View {
-        TabView {
-            HomeView(recipes: recipes)
-                .tabItem {
-                    Label("Home", systemImage: "house")
+        Group {
+            if let user = Auth.auth().currentUser {
+                if let email = user.email {
+                    Text(email)
+                } else {
+                    Text("No email")
                 }
-            
-            SavedRecipesView(firestoreManager: firestoreManager)
-                .tabItem {
-                    Label("Saved Recipes", systemImage: "bookmark")
+                
+                TabView {
+                    HomeView(recipes: recipes)
+                        .tabItem {
+                            Label("Home", systemImage: "house")
+                        }
+                    
+                    SavedRecipesView(savedRecipes: firestoreManager.savedRecipes)
+                        .tabItem {
+                            Label("Saved Recipes", systemImage: "bookmark")
+                        }
+                    
+                    SavedIngredientsView()
+                        .tabItem {
+                            Label("Saved Ingredients", systemImage: "cart")
+                        }
+                    
+                    UserView()
+                        .tabItem {
+                            Label("User", systemImage: "person.circle")
+                        }
                 }
-            
-            SavedIngredientsView()
-                .tabItem {
-                    Label("Saved Ingredients", systemImage: "cart")
+                .onChange(of: user) { user in
+                    firestoreManager.loadData()
                 }
+            } else {
+                LoginSignupView()
+            }
+        }
+        .onAppear {
+            firestoreManager.checkIfUserExistsAndLogout()
         }
     }
 }
+
+
+
 
 

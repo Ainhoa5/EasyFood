@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		570AEA1929B39CF000C62431 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570AEA1829B39CF000C62431 /* RootView.swift */; };
 		570F32EE29B145E200FB160F /* LoginSigninView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570F32ED29B145E200FB160F /* LoginSigninView.swift */; };
 		5735D3EE29B2873200922161 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5735D3ED29B2873200922161 /* Recipe.swift */; };
 		5735D3F029B288F500922161 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5735D3EF29B288F500922161 /* ContentView.swift */; };
@@ -19,11 +20,13 @@
 		5796425F29B14CD80063C628 /* SavedRecipesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796425E29B14CD80063C628 /* SavedRecipesView.swift */; };
 		5796426129B151060063C628 /* SavedIngredientsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5796426029B151060063C628 /* SavedIngredientsView.swift */; };
 		57A0D80129B28C3800579FC3 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A0D80029B28C3800579FC3 /* FirebaseManager.swift */; };
-		57A0D80329B28E2C00579FC3 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A0D80229B28E2C00579FC3 /* AuthManager.swift */; };
 		57C05D9C29B29407002E3A2E /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C05D9B29B29406002E3A2E /* HomeView.swift */; };
+		57EFFB1929B3698E009C7BCF /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EFFB1829B3698E009C7BCF /* UserView.swift */; };
+		57EFFB1D29B36B5D009C7BCF /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EFFB1C29B36B5D009C7BCF /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		570AEA1829B39CF000C62431 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		570F32ED29B145E200FB160F /* LoginSigninView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSigninView.swift; sourceTree = "<group>"; };
 		5735D3ED29B2873200922161 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		5735D3EF29B288F500922161 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -35,8 +38,9 @@
 		5796425E29B14CD80063C628 /* SavedRecipesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedRecipesView.swift; sourceTree = "<group>"; };
 		5796426029B151060063C628 /* SavedIngredientsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedIngredientsView.swift; sourceTree = "<group>"; };
 		57A0D80029B28C3800579FC3 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
-		57A0D80229B28E2C00579FC3 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		57C05D9B29B29406002E3A2E /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		57EFFB1829B3698E009C7BCF /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
+		57EFFB1C29B36B5D009C7BCF /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +63,8 @@
 				5796425E29B14CD80063C628 /* SavedRecipesView.swift */,
 				5796426029B151060063C628 /* SavedIngredientsView.swift */,
 				57C05D9B29B29406002E3A2E /* HomeView.swift */,
+				57EFFB1829B3698E009C7BCF /* UserView.swift */,
+				570AEA1829B39CF000C62431 /* RootView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -67,6 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				5735D3ED29B2873200922161 /* Recipe.swift */,
+				57EFFB1C29B36B5D009C7BCF /* User.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -114,7 +121,6 @@
 			isa = PBXGroup;
 			children = (
 				57A0D80029B28C3800579FC3 /* FirebaseManager.swift */,
-				57A0D80229B28E2C00579FC3 /* AuthManager.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -199,13 +205,15 @@
 			files = (
 				57C05D9C29B29407002E3A2E /* HomeView.swift in Sources */,
 				5796425F29B14CD80063C628 /* SavedRecipesView.swift in Sources */,
-				57A0D80329B28E2C00579FC3 /* AuthManager.swift in Sources */,
 				5776C7B8299EA3FA00F6E989 /* ProyectoApp.swift in Sources */,
 				5735D3F029B288F500922161 /* ContentView.swift in Sources */,
 				570F32EE29B145E200FB160F /* LoginSigninView.swift in Sources */,
 				57A0D80129B28C3800579FC3 /* FirebaseManager.swift in Sources */,
 				5735D3EE29B2873200922161 /* Recipe.swift in Sources */,
+				57EFFB1929B3698E009C7BCF /* UserView.swift in Sources */,
+				57EFFB1D29B36B5D009C7BCF /* User.swift in Sources */,
 				5796426129B151060063C628 /* SavedIngredientsView.swift in Sources */,
+				570AEA1929B39CF000C62431 /* RootView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

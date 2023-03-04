@@ -47,11 +47,6 @@ struct HomeView: View {
             }
         }
         .listStyle(.plain)
-        .onAppear {
-            firebaseManager.getSavedRecipes { recipes in
-                self.savedRecipes = Set(recipes)
-            }
-        }
     }
 }
 

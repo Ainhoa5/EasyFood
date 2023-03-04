@@ -11,43 +11,148 @@ import FirebaseFirestore
 class FirebaseManager: ObservableObject {
     
     let db = Firestore.firestore()
+    @Published var savedRecipes: [Recipe] = []
+    private let userCollection = "users"
+    
+    func checkIfUserExistsAndLogout() {
+        if Auth.auth().currentUser != nil {
+            do {
+                try Auth.auth().signOut()
+            } catch let error as NSError {
+                print("Error signing out: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func createUserDocument(email: String, password: String, completion: @escaping (Error?) -> Void) {
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            completion(nil)
+            return
+        }
+        let data: [String: Any] = [
+            "email": email,
+            "name": "",
+        ]
+        db.collection(userCollection).document(userUID).setData(data) { error in
+            completion(error)
+        }
+    }
+    
+    func updateUserDocument(name: String, completion: @escaping (Error?) -> Void) {
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            completion(nil)
+            return
+        }
+        let data: [String: Any] = [
+            "name": name,
+        ]
+        db.collection(userCollection).document(userUID).updateData(data) { error in
+            completion(error)
+        }
+    }
+    
+    func fetchUserDocument(completion: @escaping (User?, Error?) -> Void) {
+        guard let userUID = Auth.auth().currentUser?.uid else {
+            completion(nil, nil)
+            return
+        }
+        db.collection(userCollection).document(userUID).getDocument { snapshot, error in
+            if let error = error {
+                completion(nil, error)
+                return
+            }
+            guard let snapshot = snapshot, let data = snapshot.data() else {
+                completion(nil, nil)
+                return
+            }
+            let email = data["email"] as? String ?? ""
+            let name = data["name"] as? String ?? ""
+            let user = User(email: email, name: name)
+            completion(user, nil)
+        }
+    }
+    
+    func login(email: String, password: String, completion: @escaping (Bool) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
+            if let error = error {
+                print("Error signing in: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print("Signed in successfully")
+                completion(true)
+            }
+        }
+    }
+    
+    func signup(email: String, password: String, completion: @escaping (Bool) -> Void) {
+        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            if let error = error {
+                print("Error signing up: \(error.localizedDescription)")
+                completion(false)
+            } else if let user = authResult?.user {
+                print("Signed up successfully with user ID: \(user.uid)")
+                completion(true)
+            }
+        }
+    }
+    
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+        } catch let error {
+            print("Error signing out: \(error.localizedDescription)")
+        }
+    }
+    
+    func loadData() {
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        db.collection("users").document(userId).getDocument { snapshot, error in
+            if let error = error {
+                print("Error getting document: \(error)")
+            } else {
+                if let data = snapshot?.data(), let savedRecipes = data["savedRecipes"] as? [String] {
+                    self.savedRecipes = savedRecipes.map { Recipe(title: $0, image: "", summary: "") }
+                } else {
+                    print("Document does not exist")
+                }
+            }
+        }
+    }
     
     func saveRecipe(_ recipe: Recipe) {
-        // create a new document for the recipe
-        var ref: DocumentReference? = nil
-        ref = db.collection("recipes").addDocument(data: [
-            "title": recipe.title,
-            "image": recipe.image,
-            "summary": recipe.summary
-        ]) { err in
-            if let err = err {
-                print("Error adding document: \(err)")
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.title])], merge: true) { error in
+                if let error = error {
+                    print("Error adding recipe: \(error)")
+                } else {
+                    print("Recipe added successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    
+    func getSavedRecipes(completion: @escaping ([String]) -> ()) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        db.collection("users").document(uid).getDocument { document, error in
+            guard let document = document, document.exists else {
+                print("Document does not exist")
+                return
+            }
+            
+            if let data = document.data(), let savedRecipes = data["savedRecipes"] as? [String] {
+                completion(savedRecipes)
             } else {
-                print("Document added with ID: \(ref!.documentID)")
+                print("Saved recipes not found")
+                completion([])
             }
         }
     }
     
-    func getSavedRecipes(completion: @escaping ([Recipe]) -> Void) {
-        // retrieve all saved recipes from Firestore
-        db.collection("recipes").getDocuments { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-                completion([])
-            } else {
-                var recipes: [Recipe] = []
-                for document in querySnapshot!.documents {
-                    let data = document.data()
-                    let title = data["title"] as! String
-                    let image = data["image"] as! String
-                    let summary = data["summary"] as! String
-                    let recipe = Recipe(title: title, image: image, summary: summary)
-                    recipes.append(recipe)
-                }
-                completion(recipes)
-            }
-        }
-    }
     func createDocument(){
         if let user = Auth.auth().currentUser {
             let docRef = db.collection("Users").document(user.uid)
@@ -63,8 +168,9 @@ class FirebaseManager: ObservableObject {
                 }
             }
         }
-
+        
     }
+    
     func updateDocument(name: String, email: String) {
         if let user = Auth.auth().currentUser {
             let db = Firestore.firestore()
@@ -81,7 +187,7 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
+    
     func fetchDocument() {
         if let user = Auth.auth().currentUser {
             let db = Firestore.firestore()
