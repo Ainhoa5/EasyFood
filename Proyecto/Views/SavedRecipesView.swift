@@ -7,31 +7,21 @@
 import SwiftUI
 
 struct SavedRecipesView: View {
-    let savedRecipes: [Recipe]
+    @State private var savedRecipes: [String] = []
 
     var body: some View {
-        List(savedRecipes) { recipe in
-            VStack(alignment: .leading) {
-                Image(recipe.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: UIScreen.main.bounds.width - 32, height: 200)
-                    .clipped()
-                    .cornerRadius(10)
-                
-                Text(recipe.title)
-                    .font(.headline)
-                
-                Text(recipe.summary)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .padding(.top, 4)
+        List(savedRecipes, id: \.self) { recipeTitle in
+            Text(recipeTitle)
+                .font(.headline)
+        }
+        .onAppear {
+            FirebaseManager.shared.getSavedRecipes { savedRecipes in
+                self.savedRecipes = savedRecipes
             }
         }
-        .listStyle(.plain)
     }
 }
+
 
 
 

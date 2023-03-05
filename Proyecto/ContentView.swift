@@ -9,51 +9,56 @@ import SwiftUI
 import FirebaseAuth
 
 struct ContentView: View {
-    @StateObject var firestoreManager = FirebaseManager()
-    @State var recipes = [Recipe]()
+    @State private var isLoggedIn = false
+    let recipes = [
+        Recipe(title: "Spaghetti with Meatballs", image: "spaghetti", summary: "Delicious spaghetti with homemade meatballs"),
+        Recipe(title: "Grilled Chicken Caesar Salad", image: "salad", summary: "Fresh grilled chicken with crisp romaine lettuce and tangy Caesar dressing"),
+        Recipe(title: "Chocolate Chip Cookies", image: "cookies", summary: "Classic chocolate chip cookies, perfect for any occasion")
+    ]
     
     var body: some View {
-        Group {
-            if let user = Auth.auth().currentUser {
-                if let email = user.email {
-                    Text(email)
-                } else {
-                    Text("No email")
-                }
+        NavigationView {
+            Group {
                 
                 TabView {
-                    HomeView(recipes: recipes)
-                        .tabItem {
-                            Label("Home", systemImage: "house")
-                        }
-                    
-                    SavedRecipesView(savedRecipes: firestoreManager.savedRecipes)
-                        .tabItem {
-                            Label("Saved Recipes", systemImage: "bookmark")
-                        }
-                    
-                    SavedIngredientsView()
-                        .tabItem {
-                            Label("Saved Ingredients", systemImage: "cart")
-                        }
-                    
-                    UserView()
-                        .tabItem {
-                            Label("User", systemImage: "person.circle")
-                        }
+                    if isLoggedIn {
+                        HomeView(recipes: recipes)
+                            .tabItem {
+                                Label("Home", systemImage: "house")
+                            }
+                        SavedRecipesView()
+                            .tabItem {
+                                Label("Saved Recipes", systemImage: "bookmark")
+                            }
+                        SavedIngredientsView()
+                            .tabItem {
+                                Label("Saved Ingredients", systemImage: "cart")
+                            }
+                        UserView()
+                            .tabItem {
+                                Label("User", systemImage: "person.circle")
+                            }
+                    } else {
+                        LoginSignupView(onSuccess: {
+                            self.isLoggedIn = true
+                        })
+                    }
                 }
-                .onChange(of: user) { user in
-                    firestoreManager.loadData()
-                }
-            } else {
-                LoginSignupView()
+                .navigationBarTitle("My App")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarItems(trailing: Button(action: {
+                    FirebaseManager.shared.signOut()
+                    isLoggedIn = false
+                }) {
+                    Text("Log Out")
+                })
+                
             }
-        }
-        .onAppear {
-            firestoreManager.checkIfUserExistsAndLogout()
         }
     }
 }
+
+
 
 
 

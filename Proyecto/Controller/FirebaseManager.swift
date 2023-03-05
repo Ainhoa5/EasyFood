@@ -9,7 +9,7 @@ import Firebase
 import FirebaseFirestore
 
 class FirebaseManager: ObservableObject {
-    
+    static let shared = FirebaseManager() // add this line to create a shared instance
     let db = Firestore.firestore()
     @Published var savedRecipes: [Recipe] = []
     private let userCollection = "users"
@@ -24,9 +24,9 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    func createUserDocument(email: String, password: String, completion: @escaping (Error?) -> Void) {
+    func createUserDocument(email: String, password: String, completion: @escaping (Bool) -> Void) {
         guard let userUID = Auth.auth().currentUser?.uid else {
-            completion(nil)
+            completion(false)
             return
         }
         let data: [String: Any] = [
@@ -34,9 +34,16 @@ class FirebaseManager: ObservableObject {
             "name": "",
         ]
         db.collection(userCollection).document(userUID).setData(data) { error in
-            completion(error)
+            if let error = error {
+                print("Error creating user document: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                completion(true)
+            }
         }
     }
+
+
     
     func updateUserDocument(name: String, completion: @escaping (Error?) -> Void) {
         guard let userUID = Auth.auth().currentUser?.uid else {
@@ -84,17 +91,19 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    func signup(email: String, password: String, completion: @escaping (Bool) -> Void) {
+    func signup(email: String, password: String, completion: @escaping (Bool, Error?) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             if let error = error {
                 print("Error signing up: \(error.localizedDescription)")
-                completion(false)
-            } else if let user = authResult?.user {
-                print("Signed up successfully with user ID: \(user.uid)")
-                completion(true)
+                completion(false, error)
+                return
+            } else {
+                print("Signed up successfully")
+                completion(true, nil)
             }
         }
     }
+
     
     func signOut() {
         do {
@@ -152,6 +161,7 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
+
     
     func createDocument(){
         if let user = Auth.auth().currentUser {
