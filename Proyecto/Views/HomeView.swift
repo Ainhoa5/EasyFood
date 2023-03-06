@@ -22,19 +22,21 @@ struct HomeView: View {
                     .clipped()
                     .cornerRadius(10)
                 
-                    Button(action: {
-                        if !savedRecipes.contains(recipe) {
-                            savedRecipes.insert(recipe)
-                            firebaseManager.saveRecipe(recipe)
-                        }
-                    }) {
-                        Image(systemName: savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark")
-                            .foregroundColor(.blue)
+                Button(action: {
+                    if savedRecipes.contains(recipe) {
+                        savedRecipes.remove(recipe)
+                        firebaseManager.removeRecipe(recipe)
+                    } else {
+                        savedRecipes.insert(recipe)
+                        firebaseManager.saveRecipe(recipe)
                     }
-                    .buttonStyle(BorderlessButtonStyle())
-                    
-                    Spacer()
+                }) {
+                    Image(systemName: savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark")
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(BorderlessButtonStyle())
                 
+                Spacer()
                 
                 Text(recipe.title)
                     .font(.headline)
@@ -49,5 +51,6 @@ struct HomeView: View {
         .listStyle(.plain)
     }
 }
+
 
 

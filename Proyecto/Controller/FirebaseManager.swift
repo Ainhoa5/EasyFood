@@ -42,8 +42,8 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
-
+    
+    
     
     func updateUserDocument(name: String, completion: @escaping (Error?) -> Void) {
         guard let userUID = Auth.auth().currentUser?.uid else {
@@ -103,7 +103,7 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
+    
     
     func signOut() {
         do {
@@ -142,6 +142,21 @@ class FirebaseManager: ObservableObject {
         }
     }
     
+    func removeRecipe(_ recipe: Recipe) {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("users").document(uid).updateData(["savedRecipes": FieldValue.arrayRemove([recipe.title])]) { error in
+                if let error = error {
+                    print("Error removing recipe: \(error)")
+                } else {
+                    print("Recipe removed successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    
+    
     func getSavedRecipes(completion: @escaping ([String]) -> ()) {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
@@ -161,7 +176,7 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
+    
     
     func createDocument(){
         if let user = Auth.auth().currentUser {
