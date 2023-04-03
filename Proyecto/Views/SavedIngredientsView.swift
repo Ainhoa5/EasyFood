@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-struct Ingredient: Identifiable {
-    let id = UUID()
-    let name: String
-    let image: String
-    var isSaved: Bool = false
-}
 
 struct SavedIngredientsView: View {
     @State private var ingredients: [Ingredient] = [
@@ -21,20 +15,23 @@ struct SavedIngredientsView: View {
         Ingredient(name: "Tomatoes", image: "cheese"),
         Ingredient(name: "Garlic", image: "cheese"),
         Ingredient(name: "Cheese", image: "cheese"),
-    ]
+    ] // dummy data
+    let firebaseManager = FirebaseManager() // Firebase manager
     
     var body: some View {
         NavigationView {
             List {
+                // all ingredients section
                 Section(header: Text("Ingredients")) {
                     ForEach(ingredients) { ingredient in
                         HStack {
                             Image(ingredient.image)
                                 .resizable()
                                 .frame(width: 50, height: 50)
+                            
                             Text(ingredient.name)
                             Spacer()
-                            if ingredient.isSaved {
+                            if ingredient.isSaved { // change save icon if the ingredient is already saved
                                 Image(systemName: "bookmark.fill")
                                     .foregroundColor(.blue)
                             } else {
@@ -42,13 +39,21 @@ struct SavedIngredientsView: View {
                                     .foregroundColor(.gray)
                             }
                         }
-                        .onTapGesture {
+                        .onTapGesture { // set ingredient state as saved
+                            // change this later to use Firebase
                             if let index = ingredients.firstIndex(where: { $0.id == ingredient.id }) {
                                 ingredients[index].isSaved.toggle()
+                                if(ingredients[index].isSaved){
+                                    firebaseManager.saveIngredient(ingredients[index])
+                                }else{
+                                    firebaseManager.removeIngredient(ingredients[index])
+                                }
                             }
                         }
                     }
                 }
+                
+                // saved ingredients section
                 Section(header: Text("Saved Ingredients")) {
                     ForEach(ingredients.filter({ $0.isSaved })) { ingredient in
                         HStack {
@@ -63,6 +68,7 @@ struct SavedIngredientsView: View {
                         .onTapGesture {
                             if let index = ingredients.firstIndex(where: { $0.id == ingredient.id }) {
                                 ingredients[index].isSaved.toggle()
+                                firebaseManager.removeIngredient(ingredients[index])
                             }
                         }
                     }

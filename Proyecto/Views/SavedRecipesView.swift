@@ -7,15 +7,15 @@
 import SwiftUI
 
 struct SavedRecipesView: View {
-    @State private var savedRecipes: [String] = []
+    @State private var savedRecipes: [String] = [] // savedRecipes
 
     var body: some View {
         List(savedRecipes, id: \.self) { recipeTitle in
             Text(recipeTitle)
                 .font(.headline)
         }
-        .onAppear {
-            FirebaseManager.shared.getSavedRecipes { savedRecipes in
+        .onAppear { // fetch the saved recipes onAppear
+            FirebaseManager.shared.fetchSavedRecipes { savedRecipes in
                 self.savedRecipes = savedRecipes
             }
         }
