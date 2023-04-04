@@ -23,6 +23,7 @@
 		579D31DF29D0949600EA6D83 /* EdamamCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 576D5CB429D084B700B94363 /* EdamamCredentials.plist */; };
 		57A0D80129B28C3800579FC3 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A0D80029B28C3800579FC3 /* FirebaseManager.swift */; };
 		57C05D9C29B29407002E3A2E /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C05D9B29B29406002E3A2E /* HomeView.swift */; };
+		57CB94F629DC74D000018207 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 57CB94F529DC74D000018207 /* URLImage */; };
 		57CDD52129D0A7F3000F63D3 /* SwiftDotEnv in Frameworks */ = {isa = PBXBuildFile; productRef = 57CDD52029D0A7F3000F63D3 /* SwiftDotEnv */; };
 		57DF244D29B4C7A600FFEA99 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DF244C29B4C7A600FFEA99 /* RootView.swift */; };
 		57EFFB1929B3698E009C7BCF /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57EFFB1829B3698E009C7BCF /* UserView.swift */; };
@@ -58,6 +59,7 @@
 			files = (
 				5735D3F329B28AC600922161 /* FirebaseAuth in Frameworks */,
 				57CDD52129D0A7F3000F63D3 /* SwiftDotEnv in Frameworks */,
+				57CB94F629DC74D000018207 /* URLImage in Frameworks */,
 				5735D3F529B28AC600922161 /* FirebaseFirestore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -158,6 +160,7 @@
 				5735D3F229B28AC600922161 /* FirebaseAuth */,
 				5735D3F429B28AC600922161 /* FirebaseFirestore */,
 				57CDD52029D0A7F3000F63D3 /* SwiftDotEnv */,
+				57CB94F529DC74D000018207 /* URLImage */,
 			);
 			productName = Proyecto;
 			productReference = 5776C7B4299EA3FA00F6E989 /* Proyecto.app */;
@@ -190,6 +193,7 @@
 			packageReferences = (
 				5735D3F129B28AC600922161 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				57CDD51F29D0A7F3000F63D3 /* XCRemoteSwiftPackageReference "SwiftDotEnv" */,
+				57CB94F429DC74D000018207 /* XCRemoteSwiftPackageReference "url-image" */,
 			);
 			productRefGroup = 5776C7B5299EA3FA00F6E989 /* Products */;
 			projectDirPath = "";
@@ -446,6 +450,14 @@
 				minimumVersion = 9.0.0;
 			};
 		};
+		57CB94F429DC74D000018207 /* XCRemoteSwiftPackageReference "url-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dmytro-anokhin/url-image";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		57CDD51F29D0A7F3000F63D3 /* XCRemoteSwiftPackageReference "SwiftDotEnv" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/noahkamara/SwiftDotEnv";
@@ -466,6 +478,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5735D3F129B28AC600922161 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		57CB94F529DC74D000018207 /* URLImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 57CB94F429DC74D000018207 /* XCRemoteSwiftPackageReference "url-image" */;
+			productName = URLImage;
 		};
 		57CDD52029D0A7F3000F63D3 /* SwiftDotEnv */ = {
 			isa = XCSwiftPackageProductDependency;

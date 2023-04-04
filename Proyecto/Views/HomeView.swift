@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import URLImage
 
 struct HomeView: View {
     @State private var recipes: [Recipe] = [] // Initialize as an empty list
@@ -16,12 +17,20 @@ struct HomeView: View {
     var body: some View {
         List(recipes) { recipe in // list of recipes to show on View
             VStack(alignment: .leading) {
-                Image(recipe.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: UIScreen.main.bounds.width - 32, height: 200)
-                    .clipped()
-                    .cornerRadius(10)
+                
+                if let imageURL = URL(string: recipe.image) {
+                                URLImage(imageURL) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                }
+                                .frame(width: 100, height: 100)
+                                .clipped()
+                            } else {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.gray)
+                                    .frame(width: 100, height: 100)
+                            }
                 
                 Button(action: { // Save recipe button
                     if savedRecipes.contains(recipe) { // if the recipe is already on the list

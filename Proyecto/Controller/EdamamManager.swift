@@ -11,19 +11,15 @@ class EdamamManager {
     static let shared = EdamamManager()
     private let apiKey = "30ed7f012bab9748501c3bf3b109b2da"
     private let appId = "7036473e"
-    private let baseURL = "https://api.edamam.com/search"
-    var from: Int = 0
-    let pageSize: Int = 1
+    private let baseURL = "https://api.edamam.com/api/recipes/v2?type=public"
 
     private init() {}
     
     func fetchRecipes(ingredients: [String], completion: @escaping (Result<[Recipe], Error>) -> Void) {
-        //        let ingredientsString = ingredients.joined(separator: " ")
-        //        let encodedIngredientsString = ingredientsString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        //        print("IngredientsString: "+ingredientsString)
-        //        print("encodedIngredientsString: "+encodedIngredientsString)
+                let ingredientsString = ingredients.joined(separator: "%2C%20")
+                print("IngredientsString: "+ingredientsString)
         
-        guard let url = URL(string: "\(baseURL)?q=chicken&app_id=\(appId)&app_key=\(apiKey)&from=\(from)&to=\(from + pageSize)") else {
+        guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&random=true") else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
@@ -44,7 +40,7 @@ class EdamamManager {
             
             // Print the JSON response
             if let jsonString = String(data: data, encoding: .utf8) {
-                print(jsonString)
+                //print(jsonString)
             }
             
             print(data)
