@@ -17,6 +17,24 @@ struct SavedIngredientsView: View {
         Ingredient(name: "Cheese", image: "cheese"),
     ] // dummy data
     let firebaseManager = FirebaseManager() // Firebase manager
+    @EnvironmentObject var appState: AppState
+
+    private func updateIngredientsWithSaved() {
+        firebaseManager.fetchSavedIngredients { fetchedIngredientNames in
+            DispatchQueue.main.async {
+                for fetchedIngredientName in fetchedIngredientNames {
+                    if let index = ingredients.firstIndex(where: { $0.name == fetchedIngredientName }) {
+                        ingredients[index].isSaved = true
+                    } else {
+                        // Add the ingredient if it's not in the existing list
+                        let newIngredient = Ingredient(name: fetchedIngredientName, image: "",  isSaved: true)
+                        ingredients.append(newIngredient)
+                    }
+                }
+                appState.ingredientsFetched = true
+            }
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -43,9 +61,14 @@ struct SavedIngredientsView: View {
                             // change this later to use Firebase
                             if let index = ingredients.firstIndex(where: { $0.id == ingredient.id }) {
                                 ingredients[index].isSaved.toggle()
+                                appState.shouldUpdateRecipes = true
                                 if(ingredients[index].isSaved){
+                                    appState.savedIngredients.append(ingredients[index])
                                     firebaseManager.saveIngredient(ingredients[index])
                                 }else{
+                                    appState.savedIngredients.removeAll { ingredient in
+                                        ingredient.name == ingredients[index].name
+                                    }
                                     firebaseManager.removeIngredient(ingredients[index])
                                 }
                             }
@@ -72,9 +95,17 @@ struct SavedIngredientsView: View {
                             }
                         }
                     }
+                }.onAppear {
+                    if !appState.ingredientsFetched {
+                        updateIngredientsWithSaved()
+                    }
                 }
+
             }
             .navigationBarTitle("Saved Ingredients")
+            .onAppear{
+                
+            }
         }
     }
 }

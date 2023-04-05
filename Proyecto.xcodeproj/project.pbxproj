@@ -12,6 +12,7 @@
 		5735D3F029B288F500922161 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5735D3EF29B288F500922161 /* ContentView.swift */; };
 		5735D3F329B28AC600922161 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5735D3F229B28AC600922161 /* FirebaseAuth */; };
 		5735D3F529B28AC600922161 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5735D3F429B28AC600922161 /* FirebaseFirestore */; };
+		5757522429DDF7C000837785 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5757522329DDF7C000837785 /* AppState.swift */; };
 		5768A48D29B343AA006506F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5768A48C29B343AA006506F9 /* GoogleService-Info.plist */; };
 		5776C7B8299EA3FA00F6E989 /* ProyectoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5776C7B7299EA3FA00F6E989 /* ProyectoApp.swift */; };
 		5776C7BC299EA3FD00F6E989 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5776C7BB299EA3FD00F6E989 /* Assets.xcassets */; };
@@ -34,6 +35,7 @@
 		570F32ED29B145E200FB160F /* LoginSigninView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSigninView.swift; sourceTree = "<group>"; };
 		5735D3ED29B2873200922161 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		5735D3EF29B288F500922161 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5757522329DDF7C000837785 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		5768A48C29B343AA006506F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		576D5CB429D084B700B94363 /* EdamamCredentials.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = EdamamCredentials.plist; sourceTree = "<group>"; };
 		5776C7B4299EA3FA00F6E989 /* Proyecto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Proyecto.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +88,7 @@
 				5735D3ED29B2873200922161 /* Recipe.swift */,
 				57EFFB1C29B36B5D009C7BCF /* User.swift */,
 				578AFC0929DB234F00F5F631 /* Ingredient.swift */,
+				5757522329DDF7C000837785 /* AppState.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -228,6 +231,7 @@
 				5796425F29B14CD80063C628 /* SavedRecipesView.swift in Sources */,
 				5776C7B8299EA3FA00F6E989 /* ProyectoApp.swift in Sources */,
 				5735D3F029B288F500922161 /* ContentView.swift in Sources */,
+				5757522429DDF7C000837785 /* AppState.swift in Sources */,
 				570F32EE29B145E200FB160F /* LoginSigninView.swift in Sources */,
 				57A0D80129B28C3800579FC3 /* FirebaseManager.swift in Sources */,
 				5735D3EE29B2873200922161 /* Recipe.swift in Sources */,

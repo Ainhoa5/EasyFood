@@ -19,7 +19,7 @@ class EdamamManager {
                 let ingredientsString = ingredients.joined(separator: "%2C%20")
                 print("IngredientsString: "+ingredientsString)
         
-        guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&random=true") else {
+        guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&random=false") else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
