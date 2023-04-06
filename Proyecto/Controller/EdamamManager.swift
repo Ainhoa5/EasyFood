@@ -12,14 +12,34 @@ class EdamamManager {
     private let apiKey = "30ed7f012bab9748501c3bf3b109b2da"
     private let appId = "7036473e"
     private let baseURL = "https://api.edamam.com/api/recipes/v2?type=public"
-
+    
     private init() {}
     
-    func fetchRecipes(ingredients: [String], completion: @escaping (Result<[Recipe], Error>) -> Void) {
-                let ingredientsString = ingredients.joined(separator: "%2C%20")
-                print("IngredientsString: "+ingredientsString)
+    func fetchRecipes(_ appState: AppState, ingredients: [String], completion: @escaping (Result<[Recipe], Error>) -> Void) {
         
-        guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&random=false") else {
+        // TYPES
+        print("Selected Meal Type: \(appState.selectedMealTypes)")
+        print("Selected Dish Type: \(appState.selectedDishypes)")
+        print("Selected Diet Type: \(appState.selectedDietTypes)")
+        print("Selected Health Type: \(appState.selectedHealthTypes)")
+        // QUERY STRINGS
+        let mealTypeQueryString = appState.selectedMealTypes.map { "&mealType=\($0)" }.joined()
+        let dishTypeQueryString = appState.selectedDishypes.map {
+            "&dishType=" + $0.replacingOccurrences(of: " ", with: "%20")
+        }.joined()
+        let dietTypeQueryString = appState.selectedDietTypes.map { "&diet=\($0)" }.joined()
+        let healthTypeQueryString = appState.selectedHealthTypes.map { "&health=\($0)" }.joined()
+        
+        print("Selected Meal Type: \(mealTypeQueryString)")
+        print("Selected Dish Type: \(dishTypeQueryString)")
+        print("Selected Diet Type: \(dietTypeQueryString)")
+        print("Selected Health Type: \(healthTypeQueryString)")
+        
+        
+        let ingredientsString = ingredients.joined(separator: "%2C%20")
+        print("IngredientsString: "+ingredientsString)
+        
+        guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&random=false\(dishTypeQueryString)\(mealTypeQueryString)\(dietTypeQueryString)\(healthTypeQueryString)") else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
@@ -39,9 +59,9 @@ class EdamamManager {
             }
             
             // Print the JSON response
-            if let jsonString = String(data: data, encoding: .utf8) {
-                //print(jsonString)
-            }
+//            if let jsonString = String(data: data, encoding: .utf8) {
+//                //print(jsonString)
+//            }
             
             print(data)
             do {

@@ -70,15 +70,11 @@ struct HomeView: View {
     
     
     func fetchRecipesAndDisplay() {
-        // Get ingredients from Firebase document
-//        FirebaseManager.shared.fetchSavedIngredients { savedIngredients in
-//            self.ingredients = savedIngredients
-//        }
         
         self.ingredients = appState.savedIngredients.map { $0.name }
         print(self.ingredients)
         
-        EdamamManager.shared.fetchRecipes(ingredients: ingredients) { result in
+        EdamamManager.shared.fetchRecipes(appState, ingredients: ingredients) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedRecipes):

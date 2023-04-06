@@ -21,17 +21,7 @@ class FirebaseManager: ObservableObject {
     // String for the name of user collection
     private let userCollection = "users"
     
-    // Check if a user is signed in, then sign them out
-    func checkIfUserExistsAndLogout() {
-        if Auth.auth().currentUser != nil {
-            do {
-                try Auth.auth().signOut()
-            } catch let error as NSError {
-                print("Error signing out: \(error.localizedDescription)")
-            }
-        }
-    }
-    
+    // MARK: - User Authentication
     // Create a new user document with email and password, then call the completion handler with success or failure
     func createUserDocument(email: String, password: String, completion: @escaping (Bool) -> Void) {
         guard let userUID = Auth.auth().currentUser?.uid else {
@@ -56,50 +46,6 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    // Update an existing user document with the provided name, then call the completion handler with success or failure
-    func updateUserDocument(name: String, completion: @escaping (Error?) -> Void) {
-        guard let userUID = Auth.auth().currentUser?.uid else {
-            completion(nil)
-            return
-        }
-        
-        // Data to be updated in the user document
-        let data: [String: Any] = [
-            "name": name,
-        ]
-        
-        // Updating the data in Firestore
-        db.collection(userCollection).document(userUID).updateData(data) { error in
-            completion(error)
-        }
-    }
-    
-    // Fetch the user document and call the completion handler with a User object and an error, if any
-    func fetchUserDocument(completion: @escaping (User?, Error?) -> Void) {
-        guard let userUID = Auth.auth().currentUser?.uid else {
-            completion(nil, nil)
-            return
-        }
-        
-        // Getting the user document from Firestore
-        db.collection(userCollection).document(userUID).getDocument { snapshot, error in
-            if let error = error {
-                completion(nil, error)
-                return
-            }
-            guard let snapshot = snapshot, let data = snapshot.data() else {
-                completion(nil, nil)
-                return
-            }
-            
-            // Creating a User object from the data in the user document
-            let email = data["email"] as? String ?? ""
-            let name = data["name"] as? String ?? ""
-            let user = User(email: email, name: name)
-            completion(user, nil)
-        }
-    }
-    
     // This function logs a user in with their email and password.
     // If there is an error, it prints the error message and calls the completion handler with false.
     // If there is no error, it prints a success message and calls the completion handler with true.
@@ -114,7 +60,7 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
+    
     // This function creates a new user with the given email and password.
     // If there is an error, it prints the error message and calls the completion handler with false and the error.
     // If there is no error, it prints a success message and calls the completion handler with true and no error.
@@ -130,7 +76,7 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
+    
     // This function signs out the current user.
     // If there is an error, it prints the error message.
     func signOut() {
@@ -140,7 +86,9 @@ class FirebaseManager: ObservableObject {
             print("Error signing out: \(error.localizedDescription)")
         }
     }
-
+    
+    
+    // MARK: - Document management
     // This function adds a recipe to the current user's saved recipes in the Firestore database.
     // It first checks if the user is logged in.
     // If there is an error, it prints the error message.
@@ -157,7 +105,6 @@ class FirebaseManager: ObservableObject {
             print("User not logged in")
         }
     }
-    
     // Removes a recipe from the user's saved recipes list in Firestore
     func removeRecipe(_ recipe: Recipe) {
         // Check if the user is logged in and has a UID
@@ -174,63 +121,6 @@ class FirebaseManager: ObservableObject {
         } else {
             // If the user is not logged in, print a message.
             print("User not logged in")
-        }
-    }
-
-    func removeIngredient(_ ingredient: Ingredient) {
-        // Check if the user is logged in and has a UID
-        if let uid = Auth.auth().currentUser?.uid {
-            // Access the user's document in the "users" collection and remove the recipe title from the "savedRecipes" array field
-            db.collection("users").document(uid).updateData(["savedIngredients": FieldValue.arrayRemove([ingredient.name])]) { error in
-                // If there's an error, print the error message. Otherwise, print a success message.
-                if let error = error {
-                    print("Error removing recipe: \(error)")
-                } else {
-                    print("Ingredient removed successfully")
-                }
-            }
-        } else {
-            // If the user is not logged in, print a message.
-            print("User not logged in")
-        }
-    }
-    
-    func saveIngredient(_ ingredient: Ingredient) {
-        if let uid = Auth.auth().currentUser?.uid {
-            db.collection("users").document(uid).setData(["savedIngredients": FieldValue.arrayUnion([ingredient.name])], merge: true) { error in
-                if let error = error {
-                    print("Error adding recipe: \(error)")
-                } else {
-                    print("Ingredient added successfully")
-                }
-            }
-        } else {
-            print("User not logged in")
-        }
-    }
-    
-    func fetchSavedIngredients(completion: @escaping ([String]) -> ()){
-        // Check if the user is logged in and has a UID
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        
-        // Access the user's document in the "users" collection
-        db.collection("users").document(uid).getDocument { document, error in
-            // If there's an error or the document doesn't exist, print an error message and return an empty array.
-            guard let document = document, document.exists else {
-                print("Document does not exist")
-                return
-            }
-            
-            // If the document exists, extract the "savedRecipes" array field from the data and pass it to the completion handler.
-            if let data = document.data(), let savedRecipes = data["savedIngredients"] as? [String] {
-                completion(savedRecipes)
-            } else {
-                // If the "savedRecipes" field doesn't exist or is not an array of strings, print an error message and return an empty array.
-                print("Saved ingredients not found")
-                completion([])
-            }
         }
     }
     // Fetches the user's saved recipes list from Firestore
@@ -258,74 +148,111 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
-
-    // Creates a document for the logged in user in the "Users" collection in Firestore
-    func createDocument(){
-        // Check if the user is logged in
-        if let user = Auth.auth().currentUser {
-            // Access the user's document in the "Users" collection and set the "name", "email", and "uid" fields.
-            let docRef = db.collection("Users").document(user.uid)
-            docRef.setData([
-                "name": user.displayName ?? "",
-                "email": user.email ?? "",
-                "uid": user.uid
-            ]) { error in
+    
+    
+    func removeIngredient(_ ingredient: Ingredient) {
+        // Check if the user is logged in and has a UID
+        if let uid = Auth.auth().currentUser?.uid {
+            // Access the user's document in the "users" collection and remove the recipe title from the "savedRecipes" array field
+            db.collection("users").document(uid).updateData(["savedIngredients": FieldValue.arrayRemove([ingredient.name])]) { error in
                 // If there's an error, print the error message. Otherwise, print a success message.
                 if let error = error {
-                    print("Error adding document: \(error)")
+                    print("Error removing recipe: \(error)")
                 } else {
-                    print("Document added with ID: \(docRef.documentID)")
+                    print("Ingredient removed successfully")
                 }
+            }
+        } else {
+            // If the user is not logged in, print a message.
+            print("User not logged in")
+        }
+    }
+    func saveIngredient(_ ingredient: Ingredient) {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("users").document(uid).setData(["savedIngredients": FieldValue.arrayUnion([ingredient.name])], merge: true) { error in
+                if let error = error {
+                    print("Error adding recipe: \(error)")
+                } else {
+                    print("Ingredient added successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    func fetchSavedIngredients(completion: @escaping ([String]) -> ()){
+        // Check if the user is logged in and has a UID
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        
+        // Access the user's document in the "users" collection
+        db.collection("users").document(uid).getDocument { document, error in
+            // If there's an error or the document doesn't exist, print an error message and return an empty array.
+            guard let document = document, document.exists else {
+                print("Document does not exist")
+                return
+            }
+            
+            // If the document exists, extract the "savedRecipes" array field from the data and pass it to the completion handler.
+            if let data = document.data(), let savedRecipes = data["savedIngredients"] as? [String] {
+                completion(savedRecipes)
+            } else {
+                // If the "savedRecipes" field doesn't exist or is not an array of strings, print an error message and return an empty array.
+                print("Saved ingredients not found")
+                completion([])
             }
         }
     }
     
-    // Update a document in Firestore
-    func updateDocument(name: String, email: String) {
-        // Check if user is signed in
-        if let user = Auth.auth().currentUser {
-            // Get a reference to the Firestore database
-            let db = Firestore.firestore()
-            // Get a reference to the document we want to update
-            let docRef = db.collection("Users").document(user.uid)
-            // Update the document with the new name and email
-            docRef.updateData([
-                "name": name,
-                "email": email
-            ]) { error in
-                // Check if there was an error updating the document
+    
+    // MEAL TYPES
+    func saveMealType(_ mealTypeName: String, _ type: String) {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("users").document(uid).setData([type: FieldValue.arrayUnion([mealTypeName])], merge: true) { error in
                 if let error = error {
-                    print("Error updating document: \(error.localizedDescription)")
+                    print("Error adding meal type: \(error)")
                 } else {
-                    print("Document updated successfully")
+                    print("Meal type added successfully")
                 }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+
+    func removeMealType(_ mealTypeName: String, _ type: String) {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("users").document(uid).updateData([type: FieldValue.arrayRemove([mealTypeName])]) { error in
+                if let error = error {
+                    print("Error removing meal type: \(error)")
+                } else {
+                    print("Meal type removed successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    func fetchSavedMealTypes(_ type: String, completion: @escaping ([String]) -> ()) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+
+        db.collection("users").document(uid).getDocument { document, error in
+            guard let document = document, document.exists else {
+                print("Document does not exist")
+                return
+            }
+
+            if let data = document.data(), let savedMealTypes = data[type] as? [String] {
+                completion(savedMealTypes)
+            } else {
+                print("Saved meal types not found")
+                completion([])
             }
         }
     }
 
-    // Fetch a document from Firestore
-    func fetchDocument() {
-        // Check if user is signed in
-        if let user = Auth.auth().currentUser {
-            // Get a reference to the Firestore database
-            let db = Firestore.firestore()
-            // Get a reference to the document we want to fetch
-            let docRef = db.collection("Users").document(user.uid)
-            // Fetch the document
-            docRef.getDocument { document, error in
-                // Check if there was an error fetching the document or if the document doesn't exist
-                if let document = document, document.exists {
-                    // Extract the data from the document
-                    let data = document.data()
-                    let name = data?["name"] as? String ?? ""
-                    let email = data?["email"] as? String ?? ""
-                    // Print the data to the console
-                    print("Document data: name=\(name), email=\(email)")
-                } else {
-                    // If there was an error fetching the document or if the document doesn't exist, print an error message to the console
-                    print("Document does not exist")
-                }
-            }
-        }
-    }
+    
 }

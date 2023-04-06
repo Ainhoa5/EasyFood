@@ -8,76 +8,236 @@
 import SwiftUI
 
 struct UserView: View {
+    // toggle
+    @State private var showMealTypes: Bool = false
+    @State private var showDishTypes: Bool = false
+    @State private var showDietTypes: Bool = false
+    @State private var showHealthTypes: Bool = false
+    
+    
+    @EnvironmentObject var appState: AppState
+    @StateObject private var firebaseManager = FirebaseManager()
     // filters
-    @State private var showFilters: Bool = false
     @State private var selectedMealType: String = ""
     @State private var selectedDishType: String = ""
     @State private var selectedDietType: String = ""
     
-    let mealTypes = ["Breakfast", "Lunch", "Dinner","Snack","Teatime"]
-    let dishTypes = ["Biscuits and cookies", "Bread", "Cereals", "Condiments and souces", "Desserts", "Drinks", "Main course", "Pancake", "Preps", "Preserve", "Salad", "Sandwiches", "Side dish", "Soup", "Starter", "Sweets"]
-    let dietTypes = ["balanced", "high-fiber", "high-protein","low-carb","low-fat","low-sodium"]
-    @StateObject private var firestoreManager = FirebaseManager()
-    @State private var user: User?
+    
+    
+    // grid layout
+    private let columns: [GridItem] = [
+        GridItem(.flexible(minimum: 100, maximum: .infinity), spacing: 10),
+        GridItem(.flexible(minimum: 100, maximum: .infinity), spacing: 10),
+        GridItem(.flexible(minimum: 100, maximum: .infinity), spacing: 10)
+    ]
+    
+    
+    struct CustomToggleStyle: ToggleStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            HStack {
+                configuration.label
+                    .foregroundColor(.white)
+                    .padding(10)
+                    .background(configuration.isOn ? Color.blue : Color.gray)
+                    .cornerRadius(8)
+                    .onTapGesture {
+                        configuration.isOn.toggle()
+                    }
+            }
+        }
+    }
+    
     
     var body: some View {
-        VStack {
-            
-        }.padding()
-        VStack {
-            Toggle(isOn: $showFilters) {
-                Text("Show Filters")
-            }.padding()
-            
-            if showFilters {
-                Picker("Meal Type", selection: $selectedMealType) {
-                    ForEach(mealTypes, id: \.self) { mealType in
-                        Text(mealType).tag(mealType)
+        ScrollView{
+            VStack {
+                Toggle(isOn: $showMealTypes) {
+                    Text("Meal Types")
+                }.padding()
+                
+                if showMealTypes {
+                    ForEach(Array(appState.mealTypes.enumerated()), id: \.1.id) { index, mealType in
+                        Toggle(mealType.name, isOn: bindingForMealType(at: index))
                     }
-                }.pickerStyle(MenuPickerStyle())
-                Picker("Dish Type", selection: $selectedDishType) {
-                    ForEach(dishTypes, id: \.self) { dishType in
-                        Text(dishType).tag(dishType)
-                    }
-                }.pickerStyle(MenuPickerStyle())
-                Picker("Diet Type", selection: $selectedDietType) {
-                    ForEach(dietTypes, id: \.self) { dietTypes in
-                        Text(dietTypes).tag(dietTypes)
-                    }
-                }.pickerStyle(MenuPickerStyle())
-            }
-            
-            Button(action: {
-                // Perform the search with the selected filters
-                print("Selected Meal Type: \(selectedMealType)")
-                print("Selected Dish Type: \(selectedDishType)")
-            }) {
-                Text("Search")
-            }.padding()
-            
-            // Show user data
-            if let user = user {
-                Text("Email: \(user.email)")
-                Text("Name: \(user.name)")
-            } else {
-                Text("Loading...")
-            }
-        }
-        .onAppear {
-            firestoreManager.fetchUserDocument { user, error in
-                if let error = error {
-                    print("Failed to fetch user document: \(error.localizedDescription)")
-                    return
                 }
-                self.user = user
+                
+                Toggle(isOn: $showDietTypes) {
+                    Text("Diet Types")
+                }.padding()
+                
+                if showDietTypes {
+                    ForEach(Array(appState.dietTypes.enumerated()), id: \.1.id) { index, dietType in
+                        Toggle(dietType.name, isOn: bindingForDietType(at: index))
+                    }
+                }
+                
+                Toggle(isOn: $showDishTypes) {
+                    Text("Dish Types")
+                }.padding()
+                
+                if showDishTypes {
+                    ForEach(Array(appState.dishTypes.enumerated()), id: \.1.id) { index, dishType in
+                        Toggle(dishType.name, isOn: bindingForDishType(at: index))
+                    }
+                }
+                
+                Toggle(isOn: $showHealthTypes) {
+                    Text("Health restrictions")
+                }.padding()
+                
+                if showHealthTypes {
+                    ForEach(Array(appState.health.enumerated()), id: \.1.id) { index, healhType in
+                        Toggle(healhType.name, isOn: bindingForHealthType(at: index))
+                    }
+                }
+                
+                
+                
+                
+                
+                Button(action: {
+                    // Perform the search with the selected filters
+                    print("Selected Meal Type: \(appState.selectedMealTypes)")
+                    print("Selected Dish Type: \(appState.selectedDishypes)")
+                    print("Selected Diet Type: \(appState.selectedDietTypes)")
+                    print("Selected Health Type: \(appState.selectedHealthTypes)")
+                }) {
+                    Text("Search")
+                }.padding()
+            }
+            .onAppear {
+                firebaseManager.fetchSavedMealTypes("savedDishTypes") { savedMealTypeNames in
+                    updateDishTypesWithSaved(savedMealTypeNames)
+                }
+                firebaseManager.fetchSavedMealTypes("savedDietTypes") { savedMealTypeNames in
+                    updateDietTypesWithSaved(savedMealTypeNames)
+                }
+                firebaseManager.fetchSavedMealTypes("savedHealthTypes") { savedMealTypeNames in
+                    updateHealthTypesWithSaved(savedMealTypeNames)
+                }
+                firebaseManager.fetchSavedMealTypes("savedMealTypes") { savedMealTypeNames in
+                    updateMealTypesWithSaved(savedMealTypeNames)
+                }
+            }
+        }
+        
+    }
+    func bindingForMealType(at index: Int) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { self.appState.mealTypes[index].isSelected },
+            set: { newValue in
+                self.appState.mealTypes[index].isSelected = newValue
+                if newValue {
+                    firebaseManager.saveMealType(self.appState.mealTypes[index].name, "savedMealTypes")
+                    self.appState.selectedMealTypes.insert(self.appState.mealTypes[index].name)
+                    print(self.appState.mealTypes[index].isSelected)
+                    
+                } else {
+                    firebaseManager.removeMealType(self.appState.mealTypes[index].name, "savedMealTypes")
+                    self.appState.selectedMealTypes.remove(self.appState.mealTypes[index].name)
+                    print(self.appState.mealTypes[index].isSelected)
+                }
+            }
+        )
+    }
+    
+    func bindingForDishType(at index: Int) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { self.appState.dishTypes[index].isSelected },
+            set: { newValue in
+                self.appState.dishTypes[index].isSelected = newValue
+                if newValue {
+                    firebaseManager.saveMealType(self.appState.dishTypes[index].name, "savedDishTypes")
+                    self.appState.selectedDishypes.insert(self.appState.dishTypes[index].name)
+                    print(self.appState.dishTypes[index].isSelected)
+                    
+                } else {
+                    firebaseManager.removeMealType(self.appState.dishTypes[index].name, "savedDishTypes")
+                    self.appState.selectedDishypes.remove(self.appState.dishTypes[index].name)
+                    print(self.appState.dishTypes[index].isSelected)
+                }
+            }
+        )
+    }
+    
+    func bindingForDietType(at index: Int) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { self.appState.dietTypes[index].isSelected },
+            set: { newValue in
+                self.appState.dietTypes[index].isSelected = newValue
+                if newValue {
+                    firebaseManager.saveMealType(self.appState.dietTypes[index].name, "savedDietTypes")
+                    self.appState.selectedDietTypes.insert(self.appState.dietTypes[index].name)
+                    print(self.appState.dietTypes[index].isSelected)
+                    
+                } else {
+                    firebaseManager.removeMealType(self.appState.dietTypes[index].name, "savedDietTypes")
+                    self.appState.selectedDietTypes.remove(self.appState.dietTypes[index].name)
+                    print(self.appState.dietTypes[index].isSelected)
+                }
+            }
+        )
+    }
+    
+    func bindingForHealthType(at index: Int) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { self.appState.health[index].isSelected },
+            set: { newValue in
+                self.appState.health[index].isSelected = newValue
+                if newValue {
+                    firebaseManager.saveMealType(self.appState.health[index].name, "savedHealthTypes")
+                    self.appState.selectedHealthTypes.insert(self.appState.health[index].name)
+                    print(self.appState.health[index].isSelected)
+                    
+                } else {
+                    firebaseManager.removeMealType(self.appState.health[index].name, "savedHealthTypes")
+                    self.appState.selectedHealthTypes.remove(self.appState.health[index].name)
+                    print(self.appState.health[index].isSelected)
+                }
+            }
+        )
+    }
+    
+    
+    
+    private func updateMealTypesWithSaved(_ savedMealTypeNames: [String]) {
+        for mealTypeName in savedMealTypeNames {
+            if let index = appState.mealTypes.firstIndex(where: { $0.name == mealTypeName }) {
+                appState.mealTypes[index].isSelected = true
+                appState.selectedMealTypes.insert(appState.mealTypes[index].name)
+            }
+        }
+
+    }
+    private func updateDishTypesWithSaved(_ savedDishTypeName: [String]){
+        for dishTypeName in savedDishTypeName {
+            if let index = appState.dishTypes.firstIndex(where: { $0.name == dishTypeName }) {
+                appState.dishTypes[index].isSelected = true
+                appState.selectedDishypes.insert(appState.dishTypes[index].name)
+            }
+        }
+    }
+    private func updateDietTypesWithSaved(_ savedDietTypeName: [String]){
+        for dietTypeName in savedDietTypeName {
+            if let index = appState.dietTypes.firstIndex(where: { $0.name == dietTypeName }) {
+                appState.dietTypes[index].isSelected = true
+                appState.selectedDietTypes.insert(appState.dietTypes[index].name)
+            }
+        }
+    }
+    private func updateHealthTypesWithSaved(_ savedHealthTypeNames: [String]){
+        for healthTypeName in savedHealthTypeNames {
+            if let index = appState.health.firstIndex(where: { $0.name == healthTypeName }) {
+                appState.health[index].isSelected = true
+                appState.selectedHealthTypes.insert(appState.health[index].name)
             }
         }
     }
 }
 
 
-struct UserView_Previews: PreviewProvider {
-    static var previews: some View {
-        UserView()
-    }
-}
+//struct UserView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        UserView()
+//    }
+//}
