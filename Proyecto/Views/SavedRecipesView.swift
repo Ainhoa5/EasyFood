@@ -5,18 +5,38 @@
 //  Created by CIFP Villa De Aguimes on 2/3/23.
 //
 import SwiftUI
+import URLImage
 
 struct SavedRecipesView: View {
+    @EnvironmentObject var appState: AppState
     @State private var savedRecipes: [String] = [] // savedRecipes
-
+    
     var body: some View {
-        List(savedRecipes, id: \.self) { recipeTitle in
-            Text(recipeTitle)
-                .font(.headline)
-        }
-        .onAppear { // fetch the saved recipes onAppear
-            FirebaseManager.shared.fetchSavedRecipes { savedRecipes in
-                self.savedRecipes = savedRecipes
+        NavigationView {
+            List {
+                ForEach(Array(appState.savedRecipes), id: \.id) { recipe in
+                    HStack {
+                        if let imageURL = URL(string: recipe.image) {
+                            URLImage(imageURL) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            }
+                            .frame(width: 100, height: 100)
+                            .clipped()
+                        } else {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray)
+                                .frame(width: 100, height: 100)
+                        }
+                        
+                        Text(recipe.label)
+                    }
+                }
+            }
+            .navigationTitle("Saved Recipes")
+            .onAppear {
+                
             }
         }
     }

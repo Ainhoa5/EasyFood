@@ -11,70 +11,66 @@ import URLImage
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
     @State private var recipes: [Recipe] = [] // Initialize as an empty list
-    @State private var savedRecipes: Set<Recipe> = [] // list of saved recipes on this view
-    @State private var ingredients: [String] = [] // saved ingredients
+    //@State private var savedRecipes: Set<Recipe> = [] // list of saved recipes on this view
+    //@State private var ingredients: [String] = [] // saved ingredients
     let firebaseManager = FirebaseManager() // Firebase manager
     
     
     
     
     var body: some View {
-        
-        List(recipes) { recipe in // list of recipes to show on View
-            VStack(alignment: .leading) {
-                
-                if let imageURL = URL(string: recipe.image) {
-                    URLImage(imageURL) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
+        NavigationView {
+            List(recipes) { recipe in
+                NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
+                    HStack {
+                        if let imageURL = URL(string: recipe.image) {
+                            URLImage(imageURL) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            }
+                            .frame(width: 100, height: 100)
+                            .clipped()
+                        } else {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.gray)
+                                .frame(width: 100, height: 100)
+                        }
+                        Button(action: { // Save recipe button
+                            if appState.savedRecipes.contains(recipe) { // if the recipe is already on the list
+                                appState.savedRecipes.remove(recipe) // remove from local list
+                                firebaseManager.removeRecipe(recipe) // remove from firebase document
+                            } else {
+                                appState.savedRecipes.insert(recipe) // save in local list
+                                firebaseManager.saveRecipe(recipe) // save in firebase document
+                            }
+                            
+                        }) {
+                            Image(systemName: appState.savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark") // change icon depending if the recipe is saved or not
+                                .foregroundColor(.blue)
+                        }
+                        .buttonStyle(BorderlessButtonStyle())
+                        Spacer()
+                        Text(recipe.label)
+                            .font(.headline)
                     }
-                    .frame(width: 100, height: 100)
-                    .clipped()
-                } else {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray)
-                        .frame(width: 100, height: 100)
+                }
+            }
+            .onAppear {
+                //            fetchRecipesFromFirebase()
+                //            print(appState.savedRecipes)
+                
+                if appState.shouldUpdateRecipes {
+                    fetchRecipesAndDisplay()
+                    appState.shouldUpdateRecipes = false
                 }
                 
-                Button(action: { // Save recipe button
-                    if savedRecipes.contains(recipe) { // if the recipe is already on the list
-                        savedRecipes.remove(recipe) // remove from local list
-                        firebaseManager.removeRecipe(recipe) // remove from firebase document
-                    } else {
-                        savedRecipes.insert(recipe) // save in local list
-                        firebaseManager.saveRecipe(recipe) // save in firebase document
-                    }
-                    
-                }) {
-                    Image(systemName: savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark") // change icon depending if the recipe is saved or not
-                        .foregroundColor(.blue)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                
-                Spacer()
-                
-                Text(recipe.label)
-                    .font(.headline)
             }
-        }
-        .listStyle(.plain)
-        .onAppear {
-            if appState.shouldUpdateRecipes {
-                fetchRecipesAndDisplay()
-                appState.shouldUpdateRecipes = false
-            }
-            
+            .navigationTitle("Recipes")
         }
     }
-    
-    
     func fetchRecipesAndDisplay() {
-        
-        self.ingredients = appState.savedIngredients.map { $0.name }
-        print(self.ingredients)
-        
-        EdamamManager.shared.fetchRecipes(appState, ingredients: ingredients) { result in
+        EdamamManager.shared.fetchRecipes(appState) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedRecipes):
@@ -87,7 +83,26 @@ struct HomeView: View {
             }
         }
     }
+
+    func fetchRecipesFromFirebase() {
+        // get the users saved recipes stored on firebase
+        FirebaseManager.shared.fetchSavedRecipes { savedRecipes in
+            EdamamManager.shared.fetchSpecificRecipe(recipeLabels: savedRecipes) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let recipeSet):
+                        // Save the fetched recipes to the app state
+                        print(recipeSet.map { $0.label })
+                        self.appState.savedRecipes = recipeSet
+                    case .failure(let error):
+                        print("Error fetching recipes: \(error)")
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 
 

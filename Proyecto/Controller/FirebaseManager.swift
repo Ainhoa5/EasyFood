@@ -92,19 +92,19 @@ class FirebaseManager: ObservableObject {
     // This function adds a recipe to the current user's saved recipes in the Firestore database.
     // It first checks if the user is logged in.
     // If there is an error, it prints the error message.
-    func saveRecipe(_ recipe: Recipe) {
-        if let uid = Auth.auth().currentUser?.uid {
-            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
-                if let error = error {
-                    print("Error adding recipe: \(error)")
-                } else {
-                    print("Recipe added successfully")
-                }
-            }
-        } else {
-            print("User not logged in")
-        }
-    }
+//    func saveRecipe(_ recipe: Recipe) {
+//        if let uid = Auth.auth().currentUser?.uid {
+//            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
+//                if let error = error {
+//                    print("Error adding recipe: \(error)")
+//                } else {
+//                    print("Recipe added successfully")
+//                }
+//            }
+//        } else {
+//            print("User not logged in")
+//        }
+//    }
     // Removes a recipe from the user's saved recipes list in Firestore
     func removeRecipe(_ recipe: Recipe) {
         // Check if the user is logged in and has a UID
@@ -124,30 +124,33 @@ class FirebaseManager: ObservableObject {
         }
     }
     // Fetches the user's saved recipes list from Firestore
-    func fetchSavedRecipes(completion: @escaping ([String]) -> ()) {
-        // Check if the user is logged in and has a UID
-        guard let uid = Auth.auth().currentUser?.uid else {
-            return
-        }
-        
-        // Access the user's document in the "users" collection
-        db.collection("users").document(uid).getDocument { document, error in
-            // If there's an error or the document doesn't exist, print an error message and return an empty array.
-            guard let document = document, document.exists else {
-                print("Document does not exist")
-                return
-            }
-            
-            // If the document exists, extract the "savedRecipes" array field from the data and pass it to the completion handler.
-            if let data = document.data(), let savedRecipes = data["savedRecipes"] as? [String] {
-                completion(savedRecipes)
-            } else {
-                // If the "savedRecipes" field doesn't exist or is not an array of strings, print an error message and return an empty array.
-                print("Saved recipes not found")
-                completion([])
-            }
-        }
-    }
+//    func fetchSavedRecipes(completion: @escaping ([String]) -> ()) {
+//        // Check if the user is logged in and has a UID
+//        guard let uid = Auth.auth().currentUser?.uid else {
+//            return
+//        }
+//
+//        // Access the user's document in the "users" collection
+//        db.collection("users").document(uid).getDocument { document, error in
+//            // If there's an error or the document doesn't exist, print an error message and return an empty array.
+//            guard let document = document, document.exists else {
+//                print("Document does not exist")
+//                return
+//            }
+//
+//            // If the document exists, extract the "savedRecipes" array field from the data and pass it to the completion handler.
+//            if let data = document.data(), let savedRecipes = data["savedRecipes"] as? [String] {
+//                completion(savedRecipes)
+//            } else {
+//                // If the "savedRecipes" field doesn't exist or is not an array of strings, print an error message and return an empty array.
+//                print("Saved recipes not found")
+//                completion([])
+//            }
+//        }
+//    }
+    
+    
+    // PRUEBAS
     
     
     func removeIngredient(_ ingredient: Ingredient) {

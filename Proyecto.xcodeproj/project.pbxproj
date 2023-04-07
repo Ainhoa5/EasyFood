@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		570F32EE29B145E200FB160F /* LoginSigninView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 570F32ED29B145E200FB160F /* LoginSigninView.swift */; };
+		5732788229E07B3B001A9ECE /* RecipeDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5732788129E07B3B001A9ECE /* RecipeDetailView.swift */; };
 		5735D3EE29B2873200922161 /* Recipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5735D3ED29B2873200922161 /* Recipe.swift */; };
 		5735D3F029B288F500922161 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5735D3EF29B288F500922161 /* ContentView.swift */; };
 		5735D3F329B28AC600922161 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5735D3F229B28AC600922161 /* FirebaseAuth */; };
@@ -34,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		570F32ED29B145E200FB160F /* LoginSigninView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSigninView.swift; sourceTree = "<group>"; };
+		5732788129E07B3B001A9ECE /* RecipeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
 		5735D3ED29B2873200922161 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		5735D3EF29B288F500922161 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5757522329DDF7C000837785 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
@@ -80,6 +82,7 @@
 				57C05D9B29B29406002E3A2E /* HomeView.swift */,
 				57EFFB1829B3698E009C7BCF /* UserView.swift */,
 				57DF244C29B4C7A600FFEA99 /* RootView.swift */,
+				5732788129E07B3B001A9ECE /* RecipeDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -236,6 +239,7 @@
 				57A2099E29DEFD8100289F08 /* RecipeTypes.swift in Sources */,
 				5735D3F029B288F500922161 /* ContentView.swift in Sources */,
 				5757522429DDF7C000837785 /* AppState.swift in Sources */,
+				5732788229E07B3B001A9ECE /* RecipeDetailView.swift in Sources */,
 				570F32EE29B145E200FB160F /* LoginSigninView.swift in Sources */,
 				57A0D80129B28C3800579FC3 /* FirebaseManager.swift in Sources */,
 				5735D3EE29B2873200922161 /* Recipe.swift in Sources */,

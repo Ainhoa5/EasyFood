@@ -13,7 +13,7 @@ class AppState: ObservableObject {
     @Published var selectedDietTypes: Set<String> = []
     @Published var selectedDishypes: Set<String> = []
     @Published var selectedHealthTypes: Set<String> = []
-    @Published var recipes: [Recipe] = []
+    @Published var savedRecipes: Set<Recipe> = []
     @Published var savedIngredients: [Ingredient] = []
     
     // Types
