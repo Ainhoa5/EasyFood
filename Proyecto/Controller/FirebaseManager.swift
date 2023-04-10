@@ -92,19 +92,19 @@ class FirebaseManager: ObservableObject {
     // This function adds a recipe to the current user's saved recipes in the Firestore database.
     // It first checks if the user is logged in.
     // If there is an error, it prints the error message.
-//    func saveRecipe(_ recipe: Recipe) {
-//        if let uid = Auth.auth().currentUser?.uid {
-//            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
-//                if let error = error {
-//                    print("Error adding recipe: \(error)")
-//                } else {
-//                    print("Recipe added successfully")
-//                }
-//            }
-//        } else {
-//            print("User not logged in")
-//        }
-//    }
+    func saveRecipe(_ recipe: Recipe) {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
+                if let error = error {
+                    print("Error adding recipe: \(error)")
+                } else {
+                    print("Recipe added successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
     // Removes a recipe from the user's saved recipes list in Firestore
     func removeRecipe(_ recipe: Recipe) {
         // Check if the user is logged in and has a UID
@@ -256,6 +256,8 @@ class FirebaseManager: ObservableObject {
             }
         }
     }
+    
+    
 
     
 }

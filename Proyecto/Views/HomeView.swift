@@ -36,6 +36,9 @@ struct HomeView: View {
                                 .fill(Color.gray)
                                 .frame(width: 100, height: 100)
                         }
+                        
+                        
+                        Spacer()
                         Button(action: { // Save recipe button
                             if appState.savedRecipes.contains(recipe) { // if the recipe is already on the list
                                 appState.savedRecipes.remove(recipe) // remove from local list
@@ -79,24 +82,6 @@ struct HomeView: View {
                 case .failure(let error):
                     // Handle the error
                     print("Error fetching recipes: \(error.localizedDescription)")
-                }
-            }
-        }
-    }
-
-    func fetchRecipesFromFirebase() {
-        // get the users saved recipes stored on firebase
-        FirebaseManager.shared.fetchSavedRecipes { savedRecipes in
-            EdamamManager.shared.fetchSpecificRecipe(recipeLabels: savedRecipes) { result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let recipeSet):
-                        // Save the fetched recipes to the app state
-                        print(recipeSet.map { $0.label })
-                        self.appState.savedRecipes = recipeSet
-                    case .failure(let error):
-                        print("Error fetching recipes: \(error)")
-                    }
                 }
             }
         }

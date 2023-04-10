@@ -9,7 +9,7 @@ struct Recipe: Identifiable, Codable, Hashable  {
     let id: UUID = UUID()
     let label: String
     let image: String
-    let images: [String: ImageInfo]
+    let images: [String: ImageInfo] // remove
     let source: String
     let url: String
     let yield: Int
