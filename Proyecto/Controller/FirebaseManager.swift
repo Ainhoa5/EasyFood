@@ -92,37 +92,37 @@ class FirebaseManager: ObservableObject {
     // This function adds a recipe to the current user's saved recipes in the Firestore database.
     // It first checks if the user is logged in.
     // If there is an error, it prints the error message.
-    func saveRecipe(_ recipe: Recipe) {
-        if let uid = Auth.auth().currentUser?.uid {
-            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
-                if let error = error {
-                    print("Error adding recipe: \(error)")
-                } else {
-                    print("Recipe added successfully")
-                }
-            }
-        } else {
-            print("User not logged in")
-        }
-    }
+//    func saveRecipe(_ recipe: Recipe) {
+//        if let uid = Auth.auth().currentUser?.uid {
+//            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
+//                if let error = error {
+//                    print("Error adding recipe: \(error)")
+//                } else {
+//                    print("Recipe added successfully")
+//                }
+//            }
+//        } else {
+//            print("User not logged in")
+//        }
+//    }
     // Removes a recipe from the user's saved recipes list in Firestore
-    func removeRecipe(_ recipe: Recipe) {
-        // Check if the user is logged in and has a UID
-        if let uid = Auth.auth().currentUser?.uid {
-            // Access the user's document in the "users" collection and remove the recipe title from the "savedRecipes" array field
-            db.collection("users").document(uid).updateData(["savedRecipes": FieldValue.arrayRemove([recipe.label])]) { error in
-                // If there's an error, print the error message. Otherwise, print a success message.
-                if let error = error {
-                    print("Error removing recipe: \(error)")
-                } else {
-                    print("Recipe removed successfully")
-                }
-            }
-        } else {
-            // If the user is not logged in, print a message.
-            print("User not logged in")
-        }
-    }
+//    func removeRecipe(_ recipe: Recipe) {
+//        // Check if the user is logged in and has a UID
+//        if let uid = Auth.auth().currentUser?.uid {
+//            // Access the user's document in the "users" collection and remove the recipe title from the "savedRecipes" array field
+//            db.collection("users").document(uid).updateData(["savedRecipes": FieldValue.arrayRemove([recipe.label])]) { error in
+//                // If there's an error, print the error message. Otherwise, print a success message.
+//                if let error = error {
+//                    print("Error removing recipe: \(error)")
+//                } else {
+//                    print("Recipe removed successfully")
+//                }
+//            }
+//        } else {
+//            // If the user is not logged in, print a message.
+//            print("User not logged in")
+//        }
+//    }
     // Fetches the user's saved recipes list from Firestore
 //    func fetchSavedRecipes(completion: @escaping ([String]) -> ()) {
 //        // Check if the user is logged in and has a UID
@@ -149,6 +149,116 @@ class FirebaseManager: ObservableObject {
 //        }
 //    }
     
+    // RECIPES
+    func saveRecipe(_ recipe: Recipe) {
+        if let uid = Auth.auth().currentUser?.uid {
+            // Convert the recipe struct to a dictionary
+            let recipeDict: [String: Any] = [
+                "label": recipe.label,
+                "image": recipe.image,
+                "source": recipe.source,
+                "url": recipe.url,
+                "yield": recipe.yield,
+                "dietLabels": recipe.dietLabels,
+                "healthLabels": recipe.healthLabels,
+                "cautions": recipe.cautions,
+                "ingredientLines": recipe.ingredientLines,
+                "cuisineType": recipe.cuisineType,
+                "mealType": recipe.mealType,
+                "dishType": recipe.dishType
+            ]
+
+            // Save the recipe to the "userRecipes" collection
+            db.collection("userRecipes").document(uid).updateData(["recipes": FieldValue.arrayUnion([recipeDict])]) { error in
+                if let error = error {
+                    print("Error adding recipe: \(error)")
+                } else {
+                    print("Recipe added successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    func removeRecipe(_ recipe: Recipe) {
+        if let uid = Auth.auth().currentUser?.uid {
+            let recipeDict: [String: Any] = [
+                "label": recipe.label,
+                "image": recipe.image,
+                "source": recipe.source,
+                "url": recipe.url,
+                "yield": recipe.yield,
+                "dietLabels": recipe.dietLabels,
+                "healthLabels": recipe.healthLabels,
+                "cautions": recipe.cautions,
+                "ingredientLines": recipe.ingredientLines,
+                "cuisineType": recipe.cuisineType,
+                "mealType": recipe.mealType,
+                "dishType": recipe.dishType
+            ]
+
+            db.collection("userRecipes").document(uid).updateData(["recipes": FieldValue.arrayRemove([recipeDict])]) { error in
+                if let error = error {
+                    print("Error removing recipe: \(error)")
+                } else {
+                    print("Recipe removed successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    func createRecipesDocument() {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("userRecipes").document(uid).setData(["recipes": []]) { error in
+                if let error = error {
+                    print("Error creating document: \(error)")
+                } else {
+                    print("Document created successfully")
+                }
+            }
+        } else {
+            print("User not logged in")
+        }
+    }
+    func fetchRecipes(completion: @escaping ([Recipe]) -> Void) {
+        if let uid = Auth.auth().currentUser?.uid {
+            db.collection("userRecipes").document(uid).getDocument { document, error in
+                if let document = document, document.exists {
+                    let data = document.data()
+                    let recipeDicts = data?["recipes"] as? [[String: Any]] ?? []
+
+                    var recipes: [Recipe] = []
+                    for recipeDict in recipeDicts {
+                        let recipe = Recipe(
+                            label: recipeDict["label"] as? String ?? "",
+                            image: recipeDict["image"] as? String ?? "",
+                            source: recipeDict["source"] as? String ?? "",
+                            url: recipeDict["url"] as? String ?? "",
+                            yield: recipeDict["yield"] as? Int ?? 0,
+                            dietLabels: recipeDict["dietLabels"] as? [String] ?? [],
+                            healthLabels: recipeDict["healthLabels"] as? [String] ?? [],
+                            cautions: recipeDict["cautions"] as? [String] ?? [],
+                            ingredientLines: recipeDict["ingredientLines"] as? [String] ?? [],
+                            cuisineType: recipeDict["cuisineType"] as? [String] ?? [],
+                            mealType: recipeDict["mealType"] as? [String] ?? [],
+                            dishType: recipeDict["dishType"] as? [String] ?? []
+                        )
+                        recipes.append(recipe)
+                    }
+
+                    completion(recipes)
+                } else {
+                    print("Error fetching recipes: \(error?.localizedDescription ?? "No error description")")
+                    completion([])
+                }
+            }
+        } else {
+            print("User not logged in")
+            completion([])
+        }
+    }
+
     
     // PRUEBAS
     
@@ -223,7 +333,6 @@ class FirebaseManager: ObservableObject {
             print("User not logged in")
         }
     }
-
     func removeMealType(_ mealTypeName: String, _ type: String) {
         if let uid = Auth.auth().currentUser?.uid {
             db.collection("users").document(uid).updateData([type: FieldValue.arrayRemove([mealTypeName])]) { error in

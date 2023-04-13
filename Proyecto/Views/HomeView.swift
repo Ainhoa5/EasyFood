@@ -60,8 +60,12 @@ struct HomeView: View {
                 }
             }
             .onAppear {
-                //            fetchRecipesFromFirebase()
-                //            print(appState.savedRecipes)
+                if !appState.fetchedRecipes {
+                    print("hehe")
+                    appState.fetchAndStoreRecipes()
+                    appState.fetchedRecipes = true
+                }
+                
                 
                 if appState.shouldUpdateRecipes {
                     fetchRecipesAndDisplay()

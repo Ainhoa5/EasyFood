@@ -8,6 +8,8 @@
 import SwiftUI
 
 class AppState: ObservableObject {
+    
+    let firebaseManager = FirebaseManager() // Firebase manager
     // saved variables
     @Published var selectedMealTypes: Set<String> = []
     @Published var selectedDietTypes: Set<String> = []
@@ -92,9 +94,16 @@ class AppState: ObservableObject {
     ]
 
     
-    
+    func fetchAndStoreRecipes() {
+        firebaseManager.fetchRecipes() { recipes in
+            DispatchQueue.main.async {
+                self.savedRecipes = Set(recipes)
+            }
+        }
+    }
     
     // conditions
+    @Published var fetchedRecipes: Bool = false
     @Published var shouldUpdateRecipes: Bool = false
     @Published var ingredientsFetched: Bool = false
 }

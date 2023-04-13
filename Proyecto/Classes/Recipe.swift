@@ -9,7 +9,6 @@ struct Recipe: Identifiable, Codable, Hashable  {
     let id: UUID = UUID()
     let label: String
     let image: String
-    let images: [String: ImageInfo] // remove
     let source: String
     let url: String
     let yield: Int
@@ -17,16 +16,9 @@ struct Recipe: Identifiable, Codable, Hashable  {
     let healthLabels: [String]
     let cautions: [String]
     let ingredientLines: [String]
-    let totalTime: Int
     let cuisineType: [String]
     let mealType: [String]
     let dishType: [String]
-
-    struct ImageInfo: Codable {
-        let url: String
-        let width: Int
-        let height: Int
-    }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(label)

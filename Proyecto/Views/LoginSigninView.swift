@@ -43,6 +43,7 @@ struct LoginSignupView: View {
                     } else if success {
                         authManager.createUserDocument(email: email, password: password) { success in // create a documento for the user in firestore
                             if success {
+                                authManager.createRecipesDocument()
                                 presentationMode.wrappedValue.dismiss() // dismiss view
                                 self.onSuccess() // Call the onSuccess closure to ContentView
                             }

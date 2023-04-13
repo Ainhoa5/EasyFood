@@ -28,19 +28,6 @@ struct RecipeDetailView: View {
                         .font(.headline)
                         .bold()
                     
-                    ForEach(Array(recipe.images.keys), id: \.self) { key in
-                        if let imageInfo = recipe.images[key],
-                           let imageURL = URL(string: imageInfo.url) {
-                            Text("\(key)")
-                            URLImage(imageURL) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            }
-                            .frame(width: CGFloat(imageInfo.width), height: CGFloat(imageInfo.height))
-                        }
-                    }
-                    
                     // OTHER
                     Text("Source: \(recipe.source)")
                     Text("URL: \(recipe.url)")
@@ -85,7 +72,6 @@ struct RecipeDetailView: View {
                         Text("• \(line)")
                     }
                 }
-                Text("Total Time: \(recipe.totalTime) minutes")
                 VStack(alignment: .leading, spacing: 10) {
                                     Text("Cuisine Type")
                                         .font(.headline)

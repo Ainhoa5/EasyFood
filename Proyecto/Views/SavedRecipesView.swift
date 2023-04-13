@@ -15,23 +15,26 @@ struct SavedRecipesView: View {
         NavigationView {
             List {
                 ForEach(Array(appState.savedRecipes), id: \.id) { recipe in
-                    HStack {
-                        if let imageURL = URL(string: recipe.image) {
-                            URLImage(imageURL) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            }
-                            .frame(width: 100, height: 100)
-                            .clipped()
-                        } else {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray)
+                    NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
+                        HStack {
+                            if let imageURL = URL(string: recipe.image) {
+                                URLImage(imageURL) { image in
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                }
                                 .frame(width: 100, height: 100)
+                                .clipped()
+                            } else {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.gray)
+                                    .frame(width: 100, height: 100)
+                            }
+                            
+                            Text(recipe.label)
                         }
-                        
-                        Text(recipe.label)
                     }
+                    
                 }
             }
             .navigationTitle("Saved Recipes")
