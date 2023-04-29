@@ -20,15 +20,19 @@ struct SavedIngredientsView: View {
         Ingredient(name: "Garlic", image: "cheese"),
         Ingredient(name: "Cheese", image: "cheese"),
     ] // dummy data
+    
     let firebaseManager = FirebaseManager() // Firebase manager
     @EnvironmentObject var appState: AppState
 
+//    fetch the saved ingredients from firebase and update local ingredients list
     private func updateIngredientsWithSaved() {
         firebaseManager.fetchSavedIngredients { fetchedIngredientNames in
             DispatchQueue.main.async {
                 for fetchedIngredientName in fetchedIngredientNames {
                     if let index = ingredients.firstIndex(where: { $0.name == fetchedIngredientName }) {
                         ingredients[index].isSaved = true
+                        appState.savedIngredients.append(ingredients[index])
+                        appState.shouldUpdateRecipes = true
                     } else {
                         // Add the ingredient if it's not in the existing list
                         let newIngredient = Ingredient(name: fetchedIngredientName, image: "",  isSaved: true)
@@ -39,6 +43,8 @@ struct SavedIngredientsView: View {
             }
         }
     }
+
+
     
     var body: some View {
         NavigationView {
@@ -49,6 +55,7 @@ struct SavedIngredientsView: View {
                 }.padding()
                 if showAllIngredients{
                     Section(header: Text("Ingredients")) {
+                        Text("appState.savedIngredients")
                         ForEach(ingredients) { ingredient in
                             HStack {
                                 Image(ingredient.image)
@@ -109,10 +116,6 @@ struct SavedIngredientsView: View {
                                 }
                             }
                         }
-                    }.onAppear {
-                        if !appState.ingredientsFetched {
-                            updateIngredientsWithSaved()
-                        }
                     }
                 }
                     
@@ -120,8 +123,10 @@ struct SavedIngredientsView: View {
 
             }
             .navigationBarTitle("Saved Ingredients")
-            .onAppear{
-                
+            .onAppear {
+                if !appState.ingredientsFetched {
+                    updateIngredientsWithSaved()
+                }
             }
         }
     }
