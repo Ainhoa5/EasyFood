@@ -20,51 +20,88 @@ struct LoginSignupView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        VStack {
+        
+        VStack(alignment: .leading) {
             // Form
-            Text("Log in")
-                .font(.title)
+            Text("Your account")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(Color.black)
+                .padding(.top)
             
-            TextField("Email", text: $email)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
+            Text("Please, create an account with us to continue.")
+                .foregroundColor(Color.gray)
+                .padding(.bottom)
+            Spacer()
             
-            SecureField("Password", text: $password)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
+            HStack {
+                Image(systemName: "envelope")
+                    .foregroundColor(.gray)
+                TextField("Email", text: $email)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(10)
+            .padding(.top)
+            
+            HStack {
+                Image(systemName: "lock")
+                    .foregroundColor(.gray)
+                SecureField("Password", text: $password)
+            }
+            .padding()
+            .background(Color.gray.opacity(0.2))
+            .cornerRadius(10)
             
             // Sign up button
-            Button("Sign up") {
-                authManager.signup(email: email, password: password) { success, error in // Sign up into firebase
-                    if let error = error {
-                        print("Error signing up: \(error.localizedDescription)")
-                    } else if success {
-                        authManager.createUserDocument(email: email, password: password) { success in // create a documento for the user in firestore
-                            if success {
-                                authManager.createRecipesDocument()
-                                presentationMode.wrappedValue.dismiss() // dismiss view
-                                self.onSuccess() // Call the onSuccess closure to ContentView
+            VStack(alignment: .center) {
+                Button("Sign up") {
+                    authManager.signup(email: email, password: password) { success, error in // Sign up into firebase
+                        if let error = error {
+                            print("Error signing up: \(error.localizedDescription)")
+                        } else if success {
+                            authManager.createUserDocument(email: email, password: password) { success in // create a documento for the user in firestore
+                                if success {
+                                    authManager.createRecipesDocument()
+                                    presentationMode.wrappedValue.dismiss() // dismiss view
+                                    self.onSuccess() // Call the onSuccess closure to ContentView
+                                }
                             }
                         }
                     }
                 }
+                .buttonStyle(PlainButtonStyle())
+                .padding()
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(20)
+                .padding(.horizontal, 40)
+                .padding(.vertical, 8)
+                
+                Spacer()
             }
-            .buttonStyle(.borderedProminent)
+            .frame(maxWidth: .infinity)
             
             // Log in button
-            Button("You already have an account? Log in") {
-                authManager.login(email: email, password: password) { success in // log into firebase
-                    if success {
-                        presentationMode.wrappedValue.dismiss() // dismiss view
-                        self.onSuccess() // Call the onSuccess closure
+            Spacer()
+            HStack(alignment: .center) {
+                Text("You already have an account?")
+                    .foregroundColor(Color.black)
+                Button("Log in") {
+                    authManager.login(email: email, password: password) { success in // log into firebase
+                        if success {
+                            presentationMode.wrappedValue.dismiss() // dismiss view
+                            self.onSuccess() // Call the onSuccess closure
+                        }
                     }
                 }
+                .buttonStyle(PlainButtonStyle())
+                .foregroundColor(Color.green)
             }
-            Spacer()
+            .frame(maxWidth: .infinity)
+            
+            
         }
         .padding()
     }
 }
-

@@ -43,15 +43,6 @@ struct ContentView: View {
                     }
                 }
                 .environmentObject(appState)
-                .navigationBarTitle("My App")
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(trailing: Button(action: { // add log out button
-                    FirebaseManager.shared.signOut()
-                    isLoggedIn = false
-                }) {
-                    Text("Log Out")
-                })
-                
             }
         }
     }
