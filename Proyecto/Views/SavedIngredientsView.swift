@@ -47,15 +47,23 @@ struct SavedIngredientsView: View {
 
     
     var body: some View {
-        NavigationView {
             List {
                 // all ingredients section
-                Toggle(isOn: $showAllIngredients) {
+                VStack{
                     Text("ALL INGREDIENTS")
-                }.padding()
+                        .padding()
+                }
+                .frame(width: UIScreen.main.bounds.width)
+                .onTapGesture {
+                    if showAllIngredients {
+                        showAllIngredients = false
+                    }else {
+                        showAllIngredients = true
+                    }
+                }
+                
                 if showAllIngredients{
                     Section(header: Text("Ingredients")) {
-                        Text("appState.savedIngredients")
                         ForEach(ingredients) { ingredient in
                             HStack {
                                 Image(ingredient.image)
@@ -94,9 +102,21 @@ struct SavedIngredientsView: View {
                 
                 
                 // saved ingredients section
-                Toggle(isOn: $showSavedIngredients) {
+                VStack{
                     Text("SAVED INGREDIENTS")
-                }.padding()
+                        .padding()
+                }
+                .frame(width: UIScreen.main.bounds.width)
+                .onTapGesture {
+                    if showSavedIngredients {
+                        showSavedIngredients = false
+                    }else {
+                        showSavedIngredients = true
+                    }
+                }
+                .padding()
+                
+                
                 if showSavedIngredients{
                     Section(header: Text("Saved Ingredients")) {
                         ForEach(ingredients.filter({ $0.isSaved })) { ingredient in
@@ -129,7 +149,7 @@ struct SavedIngredientsView: View {
                 }
             }
         }
-    }
+    
 }
 
 struct SavedIngredientsView_Previews: PreviewProvider {
