@@ -38,13 +38,6 @@ struct SavedRecipesView: View {
                 }
             }
             .navigationTitle("Saved Recipes")
-            .onAppear {
-                
-            }
         }
     }
 }
-
-
-
-
