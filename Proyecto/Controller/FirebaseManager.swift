@@ -18,9 +18,6 @@ class FirebaseManager: ObservableObject {
     // Creating a published array of Recipe objects
     @Published var savedRecipes: [Recipe] = []
     
-    // String for the name of user collection
-    private let userCollection = "users"
-    
     // MARK: - User Authentication
     // Create a new user document with email and password, then call the completion handler with success or failure
     func createUserDocument(email: String, password: String, completion: @escaping (Bool) -> Void) {
@@ -36,7 +33,7 @@ class FirebaseManager: ObservableObject {
         ]
         
         // Adding the data to Firestore
-        db.collection(userCollection).document(userUID).setData(data) { error in
+        db.collection("users").document(userUID).setData(data) { error in
             if let error = error {
                 print("Error creating user document: \(error.localizedDescription)")
                 completion(false)
@@ -87,69 +84,7 @@ class FirebaseManager: ObservableObject {
         }
     }
     
-    
-    // MARK: - Document management
-    // This function adds a recipe to the current user's saved recipes in the Firestore database.
-    // It first checks if the user is logged in.
-    // If there is an error, it prints the error message.
-//    func saveRecipe(_ recipe: Recipe) {
-//        if let uid = Auth.auth().currentUser?.uid {
-//            db.collection("users").document(uid).setData(["savedRecipes": FieldValue.arrayUnion([recipe.label])], merge: true) { error in
-//                if let error = error {
-//                    print("Error adding recipe: \(error)")
-//                } else {
-//                    print("Recipe added successfully")
-//                }
-//            }
-//        } else {
-//            print("User not logged in")
-//        }
-//    }
-    // Removes a recipe from the user's saved recipes list in Firestore
-//    func removeRecipe(_ recipe: Recipe) {
-//        // Check if the user is logged in and has a UID
-//        if let uid = Auth.auth().currentUser?.uid {
-//            // Access the user's document in the "users" collection and remove the recipe title from the "savedRecipes" array field
-//            db.collection("users").document(uid).updateData(["savedRecipes": FieldValue.arrayRemove([recipe.label])]) { error in
-//                // If there's an error, print the error message. Otherwise, print a success message.
-//                if let error = error {
-//                    print("Error removing recipe: \(error)")
-//                } else {
-//                    print("Recipe removed successfully")
-//                }
-//            }
-//        } else {
-//            // If the user is not logged in, print a message.
-//            print("User not logged in")
-//        }
-//    }
-    // Fetches the user's saved recipes list from Firestore
-//    func fetchSavedRecipes(completion: @escaping ([String]) -> ()) {
-//        // Check if the user is logged in and has a UID
-//        guard let uid = Auth.auth().currentUser?.uid else {
-//            return
-//        }
-//
-//        // Access the user's document in the "users" collection
-//        db.collection("users").document(uid).getDocument { document, error in
-//            // If there's an error or the document doesn't exist, print an error message and return an empty array.
-//            guard let document = document, document.exists else {
-//                print("Document does not exist")
-//                return
-//            }
-//
-//            // If the document exists, extract the "savedRecipes" array field from the data and pass it to the completion handler.
-//            if let data = document.data(), let savedRecipes = data["savedRecipes"] as? [String] {
-//                completion(savedRecipes)
-//            } else {
-//                // If the "savedRecipes" field doesn't exist or is not an array of strings, print an error message and return an empty array.
-//                print("Saved recipes not found")
-//                completion([])
-//            }
-//        }
-//    }
-    
-    // RECIPES
+    // MARK: - Recipe management
     func saveRecipe(_ recipe: Recipe) {
         if let uid = Auth.auth().currentUser?.uid {
             // Convert the recipe struct to a dictionary
@@ -259,10 +194,7 @@ class FirebaseManager: ObservableObject {
         }
     }
 
-    
-    // PRUEBAS
-    
-    
+    // MARK: - Ingredient management
     func removeIngredient(_ ingredient: Ingredient) {
         // Check if the user is logged in and has a UID
         if let uid = Auth.auth().currentUser?.uid {
@@ -320,7 +252,7 @@ class FirebaseManager: ObservableObject {
     
     
     // MEAL TYPES
-    func saveMealType(_ mealTypeName: String, _ type: String) {
+    func saveRecipeType(_ mealTypeName: String, _ type: String) {
         if let uid = Auth.auth().currentUser?.uid {
             db.collection("users").document(uid).setData([type: FieldValue.arrayUnion([mealTypeName])], merge: true) { error in
                 if let error = error {

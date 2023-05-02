@@ -114,12 +114,20 @@ struct HomeView: View {
             }
         }
         .onAppear {
-            if !appState.fetchedRecipes {
-                print("hehe")
-                appState.fetchAndStoreRecipes()
-                appState.fetchedRecipes = true
+            // This part of the code fetches all the data stored of the user
+            // Fetch users saved ingredients
+            if !appState.ingredientsFetched {
+                appState.fetchAndStoreSavedIngredients()
+                appState.ingredientsFetched = true
             }
+            appState.printSavedIngredients()
+            // Fetch users saved recipes
+//            if !appState.fetchedRecipes {
+//                appState.fetchAndStoreSavedRecipes()
+//                appState.fetchedRecipes = true
+//            }
             
+            // Checks if there has been changes on the filters and does a new API request if so
             print(appState.shouldUpdateRecipes)
             if appState.shouldUpdateRecipes {
                 fetchRecipesAndDisplay()

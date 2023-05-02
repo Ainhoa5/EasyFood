@@ -94,14 +94,27 @@ class AppState: ObservableObject {
     ]
 
     
-    func fetchAndStoreRecipes() {
+    func fetchAndStoreSavedRecipes() {
         firebaseManager.fetchRecipes() { recipes in
             DispatchQueue.main.async {
                 self.savedRecipes = Set(recipes)
             }
         }
     }
-    
+    func fetchAndStoreSavedIngredients() {
+        firebaseManager.fetchSavedIngredients() { ingredientsNames in
+            // Map the fetched ingredients names to Ingredient objects
+            let ingredients = ingredientsNames.map { Ingredient(name: $0, image: "", isSaved: true) }
+            
+            DispatchQueue.main.async {
+                self.savedIngredients = ingredients
+            }
+        }
+    }
+    func printSavedIngredients(){
+        print("this saved ingredients: \(savedIngredients)")
+    }
+
     // conditions
     @Published var fetchedRecipes: Bool = false
     @Published var shouldUpdateRecipes: Bool = false
