@@ -15,8 +15,7 @@ class EdamamManager {
     
     private init() {}
     
-    func fetchRecipes(_ appState: AppState, completion: @escaping (Result<[Recipe], Error>) -> Void) {
-        
+    func fetchRecipesFromApi(_ appState: AppState, completion: @escaping (Result<[Recipe], Error>) -> Void) {
         // TYPES
         let mealTypeQueryString = appState.selectedMealTypes.map { "&mealType=\($0)" }.joined()
         let dishTypeQueryString = appState.selectedDishypes.map {
@@ -24,10 +23,10 @@ class EdamamManager {
         }.joined()
         let dietTypeQueryString = appState.selectedDietTypes.map { "&diet=\($0)" }.joined()
         let healthTypeQueryString = appState.selectedHealthTypes.map { "&health=\($0)" }.joined()
-        
+
         // INGREDIENTS
-        let ingredientsString = appState.savedIngredients.map { $0.name }.joined(separator: "%2C%20")
-        print("IngredientsString: "+ingredientsString)
+        let ingredientsString = appState.ingredients.filter { $0.isSaved }.map { $0.name }.joined(separator: "%2C%20")
+        print("IngredientsString: " + ingredientsString)
         
         
         guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&field=images&field=source&field=url&field=yield&field=dietLabels&field=healthLabels&field=cautions&field=ingredientLines&field=totalTime&field=cuisineType&field=mealType&field=dishType&random=false\(dishTypeQueryString)\(mealTypeQueryString)\(dietTypeQueryString)\(healthTypeQueryString)") else {

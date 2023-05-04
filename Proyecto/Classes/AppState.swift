@@ -16,7 +16,14 @@ class AppState: ObservableObject {
     @Published var selectedDishypes: Set<String> = []
     @Published var selectedHealthTypes: Set<String> = []
     @Published var savedRecipes: Set<Recipe> = []
-    @Published var savedIngredients: [Ingredient] = []
+    //@Published var savedIngredients: [Ingredient] = []
+    @Published var ingredients: [Ingredient] = [
+        Ingredient(name: "Pasta", image: "cheese"),
+        Ingredient(name: "Chicken", image: "cheese"),
+        Ingredient(name: "Tomato", image: "cheese"),
+        Ingredient(name: "Garlic", image: "cheese"),
+        Ingredient(name: "Cheese", image: "cheese"),
+    ] // dummy data
     
     // Types
     @Published var mealTypes: [RecipeTypes] = [
@@ -101,22 +108,24 @@ class AppState: ObservableObject {
             }
         }
     }
-    func fetchAndStoreSavedIngredients() {
-        firebaseManager.fetchSavedIngredients() { ingredientsNames in
-            // Map the fetched ingredients names to Ingredient objects
-            let ingredients = ingredientsNames.map { Ingredient(name: $0, image: "", isSaved: true) }
+    
+    func updateSavedIngredients(completion: @escaping () -> ()) {
+        firebaseManager.fetchSavedIngredients { [weak self] savedIngredients in
+            guard let self = self else { return }
             
-            DispatchQueue.main.async {
-                self.savedIngredients = ingredients
+            for ingredientName in savedIngredients {
+                if let index = self.ingredients.firstIndex(where: { $0.name == ingredientName }) {
+                    self.ingredients[index].isSaved = true
+                }
             }
+            completion()
         }
     }
-    func printSavedIngredients(){
-        print("this saved ingredients: \(savedIngredients)")
-    }
+
+
 
     // conditions
     @Published var fetchedRecipes: Bool = false
-    @Published var shouldUpdateRecipes: Bool = false
+    @Published var shouldUpdateRecipes: Bool = true
     @Published var ingredientsFetched: Bool = false
 }

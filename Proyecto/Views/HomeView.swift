@@ -117,31 +117,33 @@ struct HomeView: View {
             // This part of the code fetches all the data stored of the user
             // Fetch users saved ingredients
             if !appState.ingredientsFetched {
-                appState.fetchAndStoreSavedIngredients()
-                appState.ingredientsFetched = true
+                appState.updateSavedIngredients {
+                    appState.ingredientsFetched = true
+                    print("ingredients: \(appState.ingredients)")
+                    
+                    // Checks if there has been changes on the filters and does a new API request if so
+                    print(appState.shouldUpdateRecipes)
+                    if appState.shouldUpdateRecipes {
+                        fetchRecipesAndDisplay()
+                        appState.shouldUpdateRecipes = false
+                    }
+                }
+            } else {
+                // If the ingredients are already fetched, check for filter changes and update recipes accordingly
+                if appState.shouldUpdateRecipes {
+                    fetchRecipesAndDisplay()
+                    appState.shouldUpdateRecipes = false
+                }
             }
-            appState.printSavedIngredients()
-            // Fetch users saved recipes
-//            if !appState.fetchedRecipes {
-//                appState.fetchAndStoreSavedRecipes()
-//                appState.fetchedRecipes = true
-//            }
-            
-            // Checks if there has been changes on the filters and does a new API request if so
-            print(appState.shouldUpdateRecipes)
-            if appState.shouldUpdateRecipes {
-                fetchRecipesAndDisplay()
-                appState.shouldUpdateRecipes = false
-            }
-            
         }
+        
         .padding() // Add padding around the content
         
     }
     func fetchRecipesAndDisplay() {
         isLoading = true // Set isLoading to true before fetching recipes
         print(isLoading)
-        EdamamManager.shared.fetchRecipes(appState) { result in
+        EdamamManager.shared.fetchRecipesFromApi(appState) { result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let fetchedRecipes):
