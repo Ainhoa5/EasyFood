@@ -9,21 +9,50 @@ struct FilterView: View {
     
     @EnvironmentObject var appState: AppState
     @StateObject private var firebaseManager = FirebaseManager()
+
+    // Set the initial state for the already saved filters
+
     // This function toggles the selection state of a recipe type
     func toggleSelection(_ recipeType: RecipeTypes) {
         recipeType.isSelected.toggle()
         
         let typeString = recipeType.type.rawValue
         
+        switch recipeType.type {
+        case .mealType:
+            if recipeType.isSelected {
+                appState.selectedMealTypes.insert(recipeType.name)
+            } else {
+                appState.selectedMealTypes.remove(recipeType.name)
+            }
+        case .diet:
+            if recipeType.isSelected {
+                appState.selectedDietTypes.insert(recipeType.name)
+            } else {
+                appState.selectedDietTypes.remove(recipeType.name)
+            }
+        case .dishType:
+            if recipeType.isSelected {
+                appState.selectedDishTypes.insert(recipeType.name)
+            } else {
+                appState.selectedDishTypes.remove(recipeType.name)
+            }
+        case .health:
+            if recipeType.isSelected {
+                appState.selectedHealthTypes.insert(recipeType.name)
+            } else {
+                appState.selectedHealthTypes.remove(recipeType.name)
+            }
+        }
+
         if recipeType.isSelected {
-            appState.selectedMealTypes.insert(recipeType.name)
             firebaseManager.saveRecipeType(recipeType.name, typeString)
         } else {
-            appState.selectedMealTypes.remove(recipeType.name)
             firebaseManager.removeMealType(recipeType.name, typeString)
         }
+
     }
-    
+
     // This view represents a single recipe type in the filter
     func recipeTypeView(_ recipeType: RecipeTypes) -> some View {
         Text(recipeType.name)
@@ -35,7 +64,6 @@ struct FilterView: View {
                 toggleSelection(recipeType)
             }
     }
-    
     var body: some View {
         NavigationView {
             List {
