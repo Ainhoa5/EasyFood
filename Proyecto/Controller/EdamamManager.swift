@@ -26,14 +26,14 @@ class EdamamManager {
 
         // INGREDIENTS
         let ingredientsString = appState.ingredients.filter { $0.isSaved }.map { $0.name }.joined(separator: "%2C%20")
-        print("IngredientsString: " + ingredientsString)
+        //print("IngredientsString: " + ingredientsString)
         
         
         guard let url = URL(string: "\(baseURL)&q=\(ingredientsString)&app_id=\(appId)&app_key=\(apiKey)&field=label&field=image&field=images&field=source&field=url&field=yield&field=dietLabels&field=healthLabels&field=cautions&field=ingredientLines&field=totalTime&field=cuisineType&field=mealType&field=dishType&random=false\(dishTypeQueryString)\(mealTypeQueryString)\(dietTypeQueryString)\(healthTypeQueryString)") else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
-        print(url)
+        //print(url)
         
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
@@ -53,7 +53,7 @@ class EdamamManager {
 //                print(jsonString)
 //            }
             
-            print(data)
+            //print(data)
             do {
                 let decoder = JSONDecoder()
                 let response = try decoder.decode(EdamamResponse.self, from: data)

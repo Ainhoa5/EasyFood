@@ -16,7 +16,6 @@ class AppState: ObservableObject {
     @Published var selectedDishypes: Set<String> = []
     @Published var selectedHealthTypes: Set<String> = []
     @Published var savedRecipes: Set<Recipe> = []
-    //@Published var savedIngredients: [Ingredient] = []
     @Published var ingredients: [Ingredient] = [
         Ingredient(name: "Pasta", image: "cheese"),
         Ingredient(name: "Chicken", image: "cheese"),
@@ -99,17 +98,30 @@ class AppState: ObservableObject {
         RecipeTypes(name: "vegetarian", type: .health),
         RecipeTypes(name: "wheat-free", type: .health)
     ]
-
     
-    func fetchAndStoreSavedRecipes() {
-        firebaseManager.fetchRecipes() { recipes in
+    // fetch all the user's saved recipes on the db
+    func updateSavedRecipes(group: DispatchGroup, completion: @escaping () -> Void) {
+        group.enter()
+        firebaseManager.fetchRecipes { [weak self] recipes in
+            guard let self = self else { return }
+            
+            self.savedRecipes = Set(recipes)
             DispatchQueue.main.async {
-                self.savedRecipes = Set(recipes)
+                completion()
             }
+            group.leave()
         }
     }
-    
-    func updateSavedIngredients(completion: @escaping () -> ()) {
+
+    // check if a given recipe is already saved on savedRecipes
+    func isRecipeSaved(_ recipe: Recipe) -> Bool {
+        let isSaved = savedRecipes.contains(where: { $0.label == recipe.label })
+        return isSaved
+    }
+
+    // fetch the user's saved ingredients from the db
+    func updateSavedIngredients(group: DispatchGroup) {
+        group.enter()
         firebaseManager.fetchSavedIngredients { [weak self] savedIngredients in
             guard let self = self else { return }
             
@@ -118,7 +130,7 @@ class AppState: ObservableObject {
                     self.ingredients[index].isSaved = true
                 }
             }
-            completion()
+            group.leave()
         }
     }
 

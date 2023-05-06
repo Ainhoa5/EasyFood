@@ -224,12 +224,7 @@ struct RecipeDetailView_Previews: PreviewProvider {
         let sampleRecipe = Recipe(
             label: "Pickle, jam and chutney",
             image: "https://bakeitwithlove.com/wp-content/uploads/2022/10/types-of-pasta-sq.jpg",
-            source: "Sample Source",
             url: "https://www.example.com",
-            yield: 4,
-            dietLabels: ["High-Protein", "Low-Carb"],
-            healthLabels: ["Vegetarian", "Peanut-Free"],
-            cautions: ["Sulfite-Free"],
             ingredientLines: [
                 "1 cup flour",
                 "1/2 cup sugar",
@@ -237,6 +232,10 @@ struct RecipeDetailView_Previews: PreviewProvider {
                 "1/2 tsp baking powder",
                 "1/4 tsp salt"
             ],
+            dietLabels: ["High-Protein", "Low-Carb"],
+            healthLabels: ["Vegetarian", "Peanut-Free"],
+            cautions: ["Sulfite-Free"],
+            
             cuisineType: ["Italian"],
             mealType: ["Dinner"],
             dishType: ["Main course"]

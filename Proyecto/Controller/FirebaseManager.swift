@@ -91,9 +91,7 @@ class FirebaseManager: ObservableObject {
             let recipeDict: [String: Any] = [
                 "label": recipe.label,
                 "image": recipe.image,
-                "source": recipe.source,
                 "url": recipe.url,
-                "yield": recipe.yield,
                 "dietLabels": recipe.dietLabels,
                 "healthLabels": recipe.healthLabels,
                 "cautions": recipe.cautions,
@@ -102,7 +100,7 @@ class FirebaseManager: ObservableObject {
                 "mealType": recipe.mealType,
                 "dishType": recipe.dishType
             ]
-
+            
             // Save the recipe to the "userRecipes" collection
             db.collection("userRecipes").document(uid).updateData(["recipes": FieldValue.arrayUnion([recipeDict])]) { error in
                 if let error = error {
@@ -120,9 +118,7 @@ class FirebaseManager: ObservableObject {
             let recipeDict: [String: Any] = [
                 "label": recipe.label,
                 "image": recipe.image,
-                "source": recipe.source,
                 "url": recipe.url,
-                "yield": recipe.yield,
                 "dietLabels": recipe.dietLabels,
                 "healthLabels": recipe.healthLabels,
                 "cautions": recipe.cautions,
@@ -131,7 +127,7 @@ class FirebaseManager: ObservableObject {
                 "mealType": recipe.mealType,
                 "dishType": recipe.dishType
             ]
-
+            
             db.collection("userRecipes").document(uid).updateData(["recipes": FieldValue.arrayRemove([recipeDict])]) { error in
                 if let error = error {
                     print("Error removing recipe: \(error)")
@@ -161,20 +157,22 @@ class FirebaseManager: ObservableObject {
             db.collection("userRecipes").document(uid).getDocument { document, error in
                 if let document = document, document.exists {
                     let data = document.data()
+                    //print("Fetched data: \(data)") // Add this print statement
                     let recipeDicts = data?["recipes"] as? [[String: Any]] ?? []
-
+                    
+                    // Print the number of recipes fetched
+                    //print("Number of recipes fetched: \(recipeDicts.count)")
+                    
                     var recipes: [Recipe] = []
                     for recipeDict in recipeDicts {
                         let recipe = Recipe(
                             label: recipeDict["label"] as? String ?? "",
                             image: recipeDict["image"] as? String ?? "",
-                            source: recipeDict["source"] as? String ?? "",
                             url: recipeDict["url"] as? String ?? "",
-                            yield: recipeDict["yield"] as? Int ?? 0,
+                            ingredientLines: recipeDict["ingredientLines"] as? [String] ?? [],
                             dietLabels: recipeDict["dietLabels"] as? [String] ?? [],
                             healthLabels: recipeDict["healthLabels"] as? [String] ?? [],
                             cautions: recipeDict["cautions"] as? [String] ?? [],
-                            ingredientLines: recipeDict["ingredientLines"] as? [String] ?? [],
                             cuisineType: recipeDict["cuisineType"] as? [String] ?? [],
                             mealType: recipeDict["mealType"] as? [String] ?? [],
                             dishType: recipeDict["dishType"] as? [String] ?? []
@@ -204,7 +202,7 @@ class FirebaseManager: ObservableObject {
                 if let error = error {
                     print("Error removing recipe: \(error)")
                 } else {
-                    print("Ingredient removed successfully")
+                    //print("Ingredient removed successfully")
                 }
             }
         } else {
@@ -218,7 +216,7 @@ class FirebaseManager: ObservableObject {
                 if let error = error {
                     print("Error adding recipe: \(error)")
                 } else {
-                    print("Ingredient added successfully")
+                    //print("Ingredient added successfully")
                 }
             }
         } else {
@@ -282,13 +280,13 @@ class FirebaseManager: ObservableObject {
         guard let uid = Auth.auth().currentUser?.uid else {
             return
         }
-
+        
         db.collection("users").document(uid).getDocument { document, error in
             guard let document = document, document.exists else {
                 print("Document does not exist")
                 return
             }
-
+            
             if let data = document.data(), let savedMealTypes = data[type] as? [String] {
                 completion(savedMealTypes)
             } else {
@@ -299,6 +297,6 @@ class FirebaseManager: ObservableObject {
     }
     
     
-
+    
     
 }

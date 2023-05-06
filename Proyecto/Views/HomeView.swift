@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import URLImage
 
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
@@ -48,65 +47,7 @@ struct HomeView: View {
                 
             }else{
                 List(recipes) { recipe in
-                    VStack{
-                        if let imageURL = URL(string: recipe.image) {
-                            ZStack(alignment: .bottomLeading) {
-                                URLImage(imageURL) { image in
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                }
-                                .clipped()
-                                .frame(width: 350, height: 350)
-                                .cornerRadius(8)
-                                //.clipShape(RoundedRectangle(cornerRadius: 8)) // Add this line to apply rounded corners
-                                
-                                // Add dark overlay
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.black.opacity(0.4))
-                                    .frame(width: 350, height: 350)
-                                
-                                HStack{
-                                    Button(action: { // Save recipe button
-                                        if appState.savedRecipes.contains(recipe) { // if the recipe is already on the list
-                                            appState.savedRecipes.remove(recipe) // remove from local list
-                                            firebaseManager.removeRecipe(recipe) // remove from firebase document
-                                        } else {
-                                            appState.savedRecipes.insert(recipe) // save in local list
-                                            firebaseManager.saveRecipe(recipe) // save in firebase document
-                                        }
-                                        
-                                    }) {
-                                        Image(systemName: appState.savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark") // change icon depending if the recipe is saved or not
-                                            .foregroundColor(.pink)
-                                            .font(.system(size: 30))
-                                            .padding() // Add padding around the image to increase the touch area of the button
-                                    }
-                                    .buttonStyle(BorderlessButtonStyle())
-                                    
-                                    Text(recipe.label)
-                                        .font(.title2)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.white)
-                                    Spacer()
-                                    Spacer()
-                                }
-                                .padding(.bottom)
-                            }
-                            
-                        } else {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray)
-                                .frame(width: 300, height: 300)
-                        }
-                        NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
-                            EmptyView()
-                        }
-                        .opacity(0) // Hide the NavigationLink
-                        
-                        Spacer()
-                    }
-                    
+                    RecipeCell(recipe: recipe, firebaseManager: firebaseManager)
                 }
                 .navigationTitle("Recipes")
                 .navigationBarTitleDisplayMode(.inline)
@@ -114,29 +55,32 @@ struct HomeView: View {
             }
         }
         .onAppear {
-            // This part of the code fetches all the data stored of the user
-            // Fetch users saved ingredients
+            let group = DispatchGroup()
+
+            // Fetch users saved ingredients from db
             if !appState.ingredientsFetched {
-                appState.updateSavedIngredients {
-                    appState.ingredientsFetched = true
-                    print("ingredients: \(appState.ingredients)")
-                    
-                    // Checks if there has been changes on the filters and does a new API request if so
-                    print(appState.shouldUpdateRecipes)
-                    if appState.shouldUpdateRecipes {
-                        fetchRecipesAndDisplay()
-                        appState.shouldUpdateRecipes = false
-                    }
+                appState.updateSavedIngredients(group: group)
+            }
+
+            // Fetch users saved recipes from db
+            if !appState.fetchedRecipes {
+                appState.updateSavedRecipes(group: group) {
+                    print("Completion handler called after updating saved recipes")
                 }
-            } else {
-                // If the ingredients are already fetched, check for filter changes and update recipes accordingly
+            }
+
+            group.notify(queue: .main) {
+                // Update the fetched status
+                appState.ingredientsFetched = true
+                appState.fetchedRecipes = true
+
+                // Checks if there has been changes on the filters and does a new API request if so
                 if appState.shouldUpdateRecipes {
                     fetchRecipesAndDisplay()
                     appState.shouldUpdateRecipes = false
                 }
             }
         }
-        
         .padding() // Add padding around the content
         
     }

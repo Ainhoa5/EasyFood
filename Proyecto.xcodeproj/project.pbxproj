@@ -13,6 +13,7 @@
 		5735D3F029B288F500922161 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5735D3EF29B288F500922161 /* ContentView.swift */; };
 		5735D3F329B28AC600922161 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 5735D3F229B28AC600922161 /* FirebaseAuth */; };
 		5735D3F529B28AC600922161 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 5735D3F429B28AC600922161 /* FirebaseFirestore */; };
+		5756B0152A06778400CE0438 /* RecipeCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5756B0142A06778400CE0438 /* RecipeCell.swift */; };
 		5757522429DDF7C000837785 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5757522329DDF7C000837785 /* AppState.swift */; };
 		5768A48D29B343AA006506F9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5768A48C29B343AA006506F9 /* GoogleService-Info.plist */; };
 		5776C7B8299EA3FA00F6E989 /* ProyectoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5776C7B7299EA3FA00F6E989 /* ProyectoApp.swift */; };
@@ -37,6 +38,7 @@
 		5732788129E07B3B001A9ECE /* RecipeDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeDetailView.swift; sourceTree = "<group>"; };
 		5735D3ED29B2873200922161 /* Recipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipe.swift; sourceTree = "<group>"; };
 		5735D3EF29B288F500922161 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5756B0142A06778400CE0438 /* RecipeCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeCell.swift; sourceTree = "<group>"; };
 		5757522329DDF7C000837785 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		5768A48C29B343AA006506F9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		576D5CB429D084B700B94363 /* EdamamCredentials.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = EdamamCredentials.plist; sourceTree = "<group>"; };
@@ -81,6 +83,7 @@
 				57EFFB1829B3698E009C7BCF /* FilterView.swift */,
 				57DF244C29B4C7A600FFEA99 /* RootView.swift */,
 				5732788129E07B3B001A9ECE /* RecipeDetailView.swift */,
+				5756B0142A06778400CE0438 /* RecipeCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -232,6 +235,7 @@
 				57C05D9C29B29407002E3A2E /* HomeView.swift in Sources */,
 				578AFC0A29DB234F00F5F631 /* Ingredient.swift in Sources */,
 				5796425F29B14CD80063C628 /* SavedRecipesView.swift in Sources */,
+				5756B0152A06778400CE0438 /* RecipeCell.swift in Sources */,
 				5776C7B8299EA3FA00F6E989 /* ProyectoApp.swift in Sources */,
 				57A2099E29DEFD8100289F08 /* RecipeTypes.swift in Sources */,
 				5735D3F029B288F500922161 /* ContentView.swift in Sources */,

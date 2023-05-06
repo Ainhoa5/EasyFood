@@ -9,13 +9,11 @@ struct Recipe: Identifiable, Codable, Hashable  {
     let id: UUID = UUID()
     let label: String
     let image: String
-    let source: String
     let url: String
-    let yield: Int
+    let ingredientLines: [String]
     let dietLabels: [String]
     let healthLabels: [String]
     let cautions: [String]
-    let ingredientLines: [String]
     let cuisineType: [String]
     let mealType: [String]
     let dishType: [String]
