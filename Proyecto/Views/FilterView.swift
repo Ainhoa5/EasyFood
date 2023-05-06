@@ -9,13 +9,40 @@ struct FilterView: View {
     
     @EnvironmentObject var appState: AppState
     @StateObject private var firebaseManager = FirebaseManager()
+    // This function toggles the selection state of a recipe type
+    func toggleSelection(_ recipeType: RecipeTypes) {
+        recipeType.isSelected.toggle()
+        
+        let typeString = recipeType.type.rawValue
+        
+        if recipeType.isSelected {
+            appState.selectedMealTypes.insert(recipeType.name)
+            firebaseManager.saveRecipeType(recipeType.name, typeString)
+        } else {
+            appState.selectedMealTypes.remove(recipeType.name)
+            firebaseManager.removeMealType(recipeType.name, typeString)
+        }
+    }
+    
+    // This view represents a single recipe type in the filter
+    func recipeTypeView(_ recipeType: RecipeTypes) -> some View {
+        Text(recipeType.name)
+            .padding()
+            .background(recipeType.isSelected ? Color.orange.opacity(0.6) : Color.clear)
+            .foregroundColor(recipeType.isSelected ? .white : .primary)
+            .cornerRadius(8)
+            .onTapGesture {
+                toggleSelection(recipeType)
+            }
+    }
     
     var body: some View {
         NavigationView {
             List {
                 // Meal Types section
+                // Meal Types section
                 Section() {
-                    HStack{
+                    HStack {
                         Image("meal")
                             .resizable()
                             .frame(width: 50, height: 50)
@@ -28,10 +55,9 @@ struct FilterView: View {
                         showMealTypes.toggle()
                     }
                     
-                    
                     if showMealTypes {
                         ForEach(appState.mealTypes) { mealType in
-                            Text(mealType.name)
+                            recipeTypeView(mealType)
                         }
                     }
                 }
@@ -40,7 +66,7 @@ struct FilterView: View {
                 
                 // Dish Types section
                 Section() {
-                    HStack{
+                    HStack {
                         Image("dish")
                             .resizable()
                             .frame(width: 50, height: 50)
@@ -55,7 +81,7 @@ struct FilterView: View {
                     
                     if showDishTypes {
                         ForEach(appState.dishTypes) { dishType in
-                            Text(dishType.name)
+                            recipeTypeView(dishType)
                         }
                     }
                 }
@@ -64,7 +90,7 @@ struct FilterView: View {
                 
                 // Diet Types section
                 Section() {
-                    HStack{
+                    HStack {
                         Image("diet")
                             .resizable()
                             .frame(width: 50, height: 50)
@@ -80,7 +106,7 @@ struct FilterView: View {
                     
                     if showDietTypes {
                         ForEach(appState.dietTypes) { dietType in
-                            Text(dietType.name)
+                            recipeTypeView(dietType)
                         }
                     }
                 }
@@ -89,7 +115,7 @@ struct FilterView: View {
                 
                 // Health Types section
                 Section() {
-                    HStack{
+                    HStack {
                         Image("health")
                             .resizable()
                             .frame(width: 50, height: 50)
@@ -105,7 +131,7 @@ struct FilterView: View {
                     
                     if showHealthTypes {
                         ForEach(appState.health) { healthType in
-                            Text(healthType.name)
+                            recipeTypeView(healthType)
                         }
                     }
                 }

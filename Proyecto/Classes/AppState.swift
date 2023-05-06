@@ -11,10 +11,72 @@ class AppState: ObservableObject {
     
     let firebaseManager = FirebaseManager() // Firebase manager
     // saved variables
-    @Published var selectedMealTypes: Set<String> = []
-    @Published var selectedDietTypes: Set<String> = []
-    @Published var selectedDishypes: Set<String> = []
-    @Published var selectedHealthTypes: Set<String> = []
+    @Published var selectedMealTypes: Set<String> = [] {
+        didSet {
+            updateMealTypes()
+        }
+    }
+    @Published var selectedDietTypes: Set<String> = [] {
+        didSet {
+            updateDietTypes()
+        }
+    }
+    @Published var selectedDishTypes: Set<String> = [] {
+        didSet {
+            updateDishTypes()
+        }
+    }
+    @Published var selectedHealthTypes: Set<String> = [] {
+        didSet {
+            updateHealthTypes()
+        }
+    }
+    
+    init() {
+        let firebaseManager = FirebaseManager()
+        firebaseManager.fetchSavedMealTypes("mealType") { types in
+            self.selectedMealTypes = Set(types)
+            self.updateMealTypes()
+        }
+        firebaseManager.fetchSavedMealTypes("diet") { types in
+            self.selectedDietTypes = Set(types)
+            self.updateDietTypes()
+        }
+        firebaseManager.fetchSavedMealTypes("dishType") { types in
+            self.selectedDishTypes = Set(types)
+            self.updateDishTypes()
+        }
+        firebaseManager.fetchSavedMealTypes("health") { types in
+            self.selectedHealthTypes = Set(types)
+            self.updateHealthTypes()
+        }
+    }
+    
+    func updateMealTypes() {
+        for mealType in mealTypes {
+            mealType.isSelected = selectedMealTypes.contains(mealType.name)
+        }
+    }
+    
+    func updateDietTypes() {
+        for dietType in dietTypes {
+            dietType.isSelected = selectedDietTypes.contains(dietType.name)
+        }
+    }
+    
+    func updateDishTypes() {
+        for dishType in dishTypes {
+            dishType.isSelected = selectedDishTypes.contains(dishType.name)
+        }
+    }
+    
+    func updateHealthTypes() {
+        for healthType in health {
+            healthType.isSelected = selectedHealthTypes.contains(healthType.name)
+        }
+    }
+    
+    
     @Published var savedRecipes: Set<Recipe> = []
     @Published var ingredients: [Ingredient] = [
         Ingredient(name: "Pasta", image: "cheese"),
@@ -32,7 +94,7 @@ class AppState: ObservableObject {
         RecipeTypes(name: "Snack", type: .mealType),
         RecipeTypes(name: "Teatime", type: .mealType)
     ]
-
+    
     @Published var dietTypes: [RecipeTypes] = [
         RecipeTypes(name: "balanced", type: .diet),
         RecipeTypes(name: "high-fiber", type: .diet),
@@ -41,7 +103,7 @@ class AppState: ObservableObject {
         RecipeTypes(name: "low-fat", type: .diet),
         RecipeTypes(name: "low-sodium", type: .diet)
     ]
-
+    
     @Published var dishTypes: [RecipeTypes] = [
         RecipeTypes(name: "Biscuits and cookies", type: .dishType),
         RecipeTypes(name: "Bread", type: .dishType),
@@ -60,7 +122,7 @@ class AppState: ObservableObject {
         RecipeTypes(name: "Starter", type: .dishType),
         RecipeTypes(name: "Sweets", type: .dishType)
     ]
-
+    
     @Published var health: [RecipeTypes] = [
         RecipeTypes(name: "alcohol-free", type: .health),
         RecipeTypes(name: "celery-free", type: .health),
@@ -112,13 +174,13 @@ class AppState: ObservableObject {
             group.leave()
         }
     }
-
+    
     // check if a given recipe is already saved on savedRecipes
     func isRecipeSaved(_ recipe: Recipe) -> Bool {
         let isSaved = savedRecipes.contains(where: { $0.label == recipe.label })
         return isSaved
     }
-
+    
     // fetch the user's saved ingredients from the db
     func updateSavedIngredients(group: DispatchGroup) {
         group.enter()
@@ -133,9 +195,9 @@ class AppState: ObservableObject {
             group.leave()
         }
     }
-
-
-
+    
+    
+    
     // conditions
     @Published var fetchedRecipes: Bool = false
     @Published var shouldUpdateRecipes: Bool = true

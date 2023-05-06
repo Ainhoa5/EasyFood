@@ -18,7 +18,7 @@ class EdamamManager {
     func fetchRecipesFromApi(_ appState: AppState, completion: @escaping (Result<[Recipe], Error>) -> Void) {
         // TYPES
         let mealTypeQueryString = appState.selectedMealTypes.map { "&mealType=\($0)" }.joined()
-        let dishTypeQueryString = appState.selectedDishypes.map {
+        let dishTypeQueryString = appState.selectedDishTypes.map {
             "&dishType=" + $0.replacingOccurrences(of: " ", with: "%20")
         }.joined()
         let dietTypeQueryString = appState.selectedDietTypes.map { "&diet=\($0)" }.joined()
@@ -33,7 +33,7 @@ class EdamamManager {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
             return
         }
-        //print(url)
+        print(url)
         
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error = error {
