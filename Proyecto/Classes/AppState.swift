@@ -114,22 +114,25 @@ class AppState: ObservableObject {
         updateSavedRecipes(group: group)
         
         // Fetch users saved meal types from db
-        updateSelectedFilterTypes(type: "mealType") { types in
+        updateSelectedFilterTypes(type: "mealType", filterTypes: self.mealTypes) { types in
             self.selectedMealTypes = types
         }
         
-        updateSelectedFilterTypes(type: "diet") { types in
+        updateSelectedFilterTypes(type: "diet", filterTypes: self.dietTypes) { types in
             self.selectedDietTypes = types
         }
         
-        updateSelectedFilterTypes(type: "dishType") { types in
+        updateSelectedFilterTypes(type: "dishType", filterTypes: self.dishTypes) { types in
             self.selectedDishTypes = types
+
         }
         
-        updateSelectedFilterTypes(type: "health") { types in
+        updateSelectedFilterTypes(type: "health", filterTypes: self.health) { types in
             self.selectedHealthTypes = types
+
         }
         group.notify(queue: .main) { // once the functions above have been completed
+            print(self.savedRecipes)
             self.shouldUpdateRecipes = true
         }
     }
@@ -157,34 +160,19 @@ class AppState: ObservableObject {
             group.leave()
         }
     } // fetch the user's saved ingredients from the db
-    func updateSelectedFilterTypes(type: String, completion: @escaping (Set<String>) -> Void) {
+    func updateSelectedFilterTypes(type: String, filterTypes: [RecipeTypes], completion: @escaping (Set<String>) -> Void) {
         self.group.enter()
         firebaseManager.fetchSavedMealTypes(type) { types in
             let selectedTypes = Set(types)
-            completion(selectedTypes)
-            // Update the isSelected values for the filter types
-            switch type {
-            case "mealType":
-                self.updateFilterTypeSelection(filterTypes: self.mealTypes, selectedTypes: selectedTypes)
-            case "diet":
-                self.updateFilterTypeSelection(filterTypes: self.dietTypes, selectedTypes: selectedTypes)
-            case "dishType":
-                self.updateFilterTypeSelection(filterTypes: self.dishTypes, selectedTypes: selectedTypes)
-            case "health":
-                self.updateFilterTypeSelection(filterTypes: self.health, selectedTypes: selectedTypes)
-            default:
-                break
+            for filterType in filterTypes {
+                if selectedTypes.contains(filterType.name) {
+                    filterType.isSelected = true
+                }
             }
+            completion(selectedTypes)
             self.group.leave()
         }
     } // fetch the user's saved filters from the db
-    func updateFilterTypeSelection(filterTypes: [RecipeTypes], selectedTypes: Set<String>) {
-        for filterType in filterTypes {
-            if selectedTypes.contains(filterType.name) {
-                filterType.isSelected = true
-            }
-        }
-    } // change the selected status of the saved filters
 
     // check if a given recipe is already saved on savedRecipes
     func isRecipeSaved(_ recipe: Recipe) -> Bool {
