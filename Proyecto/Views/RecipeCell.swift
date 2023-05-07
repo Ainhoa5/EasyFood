@@ -25,7 +25,6 @@ struct RecipeCell: View {
                     .clipped()
                     .frame(width: 350, height: 350)
                     .cornerRadius(8)
-                    //.clipShape(RoundedRectangle(cornerRadius: 8)) // Add this line to apply rounded corners
                     
                     // Add dark overlay
                     RoundedRectangle(cornerRadius: 8)

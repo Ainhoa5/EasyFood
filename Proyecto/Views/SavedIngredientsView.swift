@@ -117,11 +117,6 @@ struct SavedIngredientsView: View {
                 }
             }
             .navigationBarTitle("Saved Ingredients")
-            .onAppear {
-//                if !appState.ingredientsFetched {
-//                    updateIngredientsWithSaved()
-//                }
-            }
         }
     
 }
