@@ -132,7 +132,6 @@ class AppState: ObservableObject {
 
         }
         group.notify(queue: .main) { // once the functions above have been completed
-            print(self.savedRecipes)
             self.shouldUpdateRecipes = true
         }
     }

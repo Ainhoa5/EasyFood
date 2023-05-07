@@ -43,7 +43,7 @@ extension FirebaseManager {
         
         // Adding the data to Firestore
         db.collection("users").document(userUID).setData(data) { error in
-            if let error = error {
+            if let _ = error {
                 completion(false)
             } else {
                 completion(true)
@@ -52,13 +52,14 @@ extension FirebaseManager {
     } // Create a new user document with email and name, then call the completion handler with success or failure
     func login(email: String, password: String, completion: @escaping (Bool) -> Void) {
         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
-            if let error = error {
+            if let _ = error {
                 completion(false)
             } else {
                 completion(true)
             }
         }
     } // Log a user in with their email and password.
+
     func signup(email: String, password: String, completion: @escaping (Bool, Error?) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
             if let error = error {
@@ -97,7 +98,7 @@ extension FirebaseManager {
     }
     func createRecipesDocument() {
         if let uid = Auth.auth().currentUser?.uid {
-            db.collection("userRecipes").document(uid).setData(["recipes": []])
+            db.collection("userRecipes").document(uid).setData(["recipes": [] as [Dictionary<String, Any>]])
         }
     }
     func fetchRecipes(completion: @escaping ([Recipe]) -> Void) {

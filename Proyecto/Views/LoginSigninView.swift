@@ -99,7 +99,6 @@ struct LoginSignupView: View {
                 Button("Sign up") {
                     authManager.signup(email: email, password: password) { success, error in // Sign up into firebase
                         if let error = error {
-                            print("Error signing up: \(error.localizedDescription)")
                             errorMessage = error.localizedDescription
                         } else if success {
                             authManager.createUserDocument(email: email, password: password) { success in // create a documento for the user in firestore
