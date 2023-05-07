@@ -11,6 +11,7 @@ struct LoginSignupView: View {
     // State variables to hold the data entered by the user
     @State private var email = ""
     @State private var password = ""
+    @State private var errorMessage = "" // State variable to hold the error message
     
     // Enviroment object to handle authentication with Firebase
     @EnvironmentObject var authManager: FirebaseManager
@@ -21,19 +22,23 @@ struct LoginSignupView: View {
     
     var body: some View {
         
-        VStack(alignment: .leading) {
-            // Form
-            Text("Your account")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(Color.black)
-                .padding(.top)
+        VStack {
+            // Form header
+            VStack(alignment: .leading){
+                Text("Your account")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color.black)
+                    .padding(.top)
+                
+                Text("Please, create an account with us to continue.")
+                    .foregroundColor(Color.gray)
+                    .padding(.bottom)
+            }
             
-            Text("Please, create an account with us to continue.")
-                .foregroundColor(Color.gray)
-                .padding(.bottom)
             Spacer()
             
+            // Fields
             HStack {
                 Image(systemName: "envelope")
                     .foregroundColor(.gray)
@@ -53,20 +58,23 @@ struct LoginSignupView: View {
             .background(Color.gray.opacity(0.2))
             .cornerRadius(10)
             
-            // Sign up button
+            // Error message
+            if !errorMessage.isEmpty {
+                Text(errorMessage)
+                    .foregroundColor(.red)
+                    .font(.caption)
+                    .padding(.bottom)
+            }
+            
+            // Log in button
             VStack(alignment: .center) {
-                Button("Sign up") {
-                    authManager.signup(email: email, password: password) { success, error in // Sign up into firebase
-                        if let error = error {
-                            print("Error signing up: \(error.localizedDescription)")
-                        } else if success {
-                            authManager.createUserDocument(email: email, password: password) { success in // create a documento for the user in firestore
-                                if success {
-                                    authManager.createRecipesDocument()
-                                    presentationMode.wrappedValue.dismiss() // dismiss view
-                                    self.onSuccess() // Call the onSuccess closure to ContentView
-                                }
-                            }
+                Button("Log in") {
+                    authManager.login(email: email, password: password) { success in // log into firebase
+                        if success {
+                            presentationMode.wrappedValue.dismiss() // dismiss view
+                            self.onSuccess() // Call the onSuccess closure
+                        } else {
+                            errorMessage = "Incorrect email or password"
                         }
                     }
                 }
@@ -81,17 +89,25 @@ struct LoginSignupView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity)
-            
-            // Log in button
+        
             Spacer()
+            
+            // Sign up button
             HStack(alignment: .center) {
-                Text("You already have an account?")
+                Text("You don't have an account yet?")
                     .foregroundColor(Color.black)
-                Button("Log in") {
-                    authManager.login(email: email, password: password) { success in // log into firebase
-                        if success {
-                            presentationMode.wrappedValue.dismiss() // dismiss view
-                            self.onSuccess() // Call the onSuccess closure
+                Button("Sign up") {
+                    authManager.signup(email: email, password: password) { success, error in // Sign up into firebase
+                        if let error = error {
+                            errorMessage = error.localizedDescription
+                        } else if success {
+                            authManager.createUserDocument(email: email, password: password) { success in // create a documento for the user in firestore
+                                if success {
+                                    authManager.createRecipesDocument()
+                                    presentationMode.wrappedValue.dismiss() // dismiss view
+                                    self.onSuccess() // Call the onSuccess closure to ContentView
+                                }
+                            }
                         }
                     }
                 }

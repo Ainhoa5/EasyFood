@@ -8,25 +8,25 @@
 import SwiftUI
 
 class AppState: ObservableObject {
+    // MARK: - MANAGERS
+    let firebaseManager = FirebaseManager()
+    let group = DispatchGroup()
     
-    let firebaseManager = FirebaseManager() // Firebase manager
-    // saved variables
-    @Published var selectedMealTypes: Set<String> = []
-    @Published var selectedDietTypes: Set<String> = []
-    @Published var selectedDishypes: Set<String> = []
-    @Published var selectedHealthTypes: Set<String> = []
-    @Published var savedRecipes: Set<Recipe> = []
-    @Published var savedIngredients: [Ingredient] = []
     
-    // Types
+    // MARK: - STATIC data
+    @Published var ingredients: [Ingredient] = [
+        Ingredient(name: "Pasta", image: "cheese"),
+        Ingredient(name: "Chicken", image: "cheese"),
+        Ingredient(name: "Garlic", image: "cheese"),
+        Ingredient(name: "Cheese", image: "cheese"),
+    ] // Available ingredients
     @Published var mealTypes: [RecipeTypes] = [
         RecipeTypes(name: "Breakfast", type: .mealType),
         RecipeTypes(name: "Lunch", type: .mealType),
         RecipeTypes(name: "Dinner", type: .mealType),
         RecipeTypes(name: "Snack", type: .mealType),
         RecipeTypes(name: "Teatime", type: .mealType)
-    ]
-
+    ] // Available meal types
     @Published var dietTypes: [RecipeTypes] = [
         RecipeTypes(name: "balanced", type: .diet),
         RecipeTypes(name: "high-fiber", type: .diet),
@@ -34,8 +34,7 @@ class AppState: ObservableObject {
         RecipeTypes(name: "low-carb", type: .diet),
         RecipeTypes(name: "low-fat", type: .diet),
         RecipeTypes(name: "low-sodium", type: .diet)
-    ]
-
+    ] // Available diet types
     @Published var dishTypes: [RecipeTypes] = [
         RecipeTypes(name: "Biscuits and cookies", type: .dishType),
         RecipeTypes(name: "Bread", type: .dishType),
@@ -53,8 +52,7 @@ class AppState: ObservableObject {
         RecipeTypes(name: "Soup", type: .dishType),
         RecipeTypes(name: "Starter", type: .dishType),
         RecipeTypes(name: "Sweets", type: .dishType)
-    ]
-
+    ] // Available dish types
     @Published var health: [RecipeTypes] = [
         RecipeTypes(name: "alcohol-free", type: .health),
         RecipeTypes(name: "celery-free", type: .health),
@@ -91,19 +89,112 @@ class AppState: ObservableObject {
         RecipeTypes(name: "vegan", type: .health),
         RecipeTypes(name: "vegetarian", type: .health),
         RecipeTypes(name: "wheat-free", type: .health)
-    ]
-
+    ] // Available health types
     
-    func fetchAndStoreRecipes() {
-        firebaseManager.fetchRecipes() { recipes in
-            DispatchQueue.main.async {
-                self.savedRecipes = Set(recipes)
-            }
+    // MARK: - DYNAMIC data
+    @Published var recipes: [Recipe] = [] // recipes to be displayed on HomeView
+    @Published var isLoading: Bool = false // recipe loading state for HomeView
+    
+    
+    // MARK: - SAVED data (for the current user)
+    @Published var savedRecipes: Set<Recipe> = []
+    @Published var selectedMealTypes: Set<String> = []
+    @Published var selectedDietTypes: Set<String> = []
+    @Published var selectedDishTypes: Set<String> = []
+    @Published var selectedHealthTypes: Set<String> = []
+    
+    // MARK: - Boolean condition
+    @Published var shouldUpdateRecipes: Bool = false // checks if the there has been a change on the filters to update the recipes displayed on the HomeView
+    
+    init() {
+        // Fetch all the user's saved data needed for the app to work as intended
+        updateSavedIngredients(group: group)
+        
+        // Fetch users saved recipes from db
+        updateSavedRecipes(group: group)
+        
+        // Fetch users saved meal types from db
+        updateSelectedFilterTypes(type: "mealType", filterTypes: self.mealTypes) { types in
+            self.selectedMealTypes = types
+        }
+        
+        updateSelectedFilterTypes(type: "diet", filterTypes: self.dietTypes) { types in
+            self.selectedDietTypes = types
+        }
+        
+        updateSelectedFilterTypes(type: "dishType", filterTypes: self.dishTypes) { types in
+            self.selectedDishTypes = types
+
+        }
+        
+        updateSelectedFilterTypes(type: "health", filterTypes: self.health) { types in
+            self.selectedHealthTypes = types
+
+        }
+        group.notify(queue: .main) { // once the functions above have been completed
+            self.shouldUpdateRecipes = true
         }
     }
     
-    // conditions
-    @Published var fetchedRecipes: Bool = false
-    @Published var shouldUpdateRecipes: Bool = false
-    @Published var ingredientsFetched: Bool = false
+    // MARK: - Fetch user's saved data
+    func updateSavedRecipes(group: DispatchGroup) {
+        group.enter()
+        firebaseManager.fetchRecipes { [weak self] recipes in
+            guard let self = self else { return }
+            
+            self.savedRecipes = Set(recipes)
+            group.leave()
+        }
+    } // fetch all the user's saved recipes on the db
+    func updateSavedIngredients(group: DispatchGroup) {
+        group.enter()
+        firebaseManager.fetchSavedIngredients { [weak self] savedIngredients in
+            guard let self = self else { return }
+            
+            for ingredientName in savedIngredients {
+                if let index = self.ingredients.firstIndex(where: { $0.name == ingredientName }) {
+                    self.ingredients[index].isSaved = true
+                }
+            }
+            group.leave()
+        }
+    } // fetch the user's saved ingredients from the db
+    func updateSelectedFilterTypes(type: String, filterTypes: [RecipeTypes], completion: @escaping (Set<String>) -> Void) {
+        self.group.enter()
+        firebaseManager.fetchSavedMealTypes(type) { types in
+            let selectedTypes = Set(types)
+            for filterType in filterTypes {
+                if selectedTypes.contains(filterType.name) {
+                    filterType.isSelected = true
+                }
+            }
+            completion(selectedTypes)
+            self.group.leave()
+        }
+    } // fetch the user's saved filters from the db
+
+    // check if a given recipe is already saved on savedRecipes
+    func isRecipeSaved(_ recipe: Recipe) -> Bool {
+        let isSaved = savedRecipes.contains(where: { $0.label == recipe.label })
+        return isSaved
+    }
+    // fetch the recipes that will be displayed on the HomeView
+    func fetchRecipesAndDisplay() {
+        if self.shouldUpdateRecipes{
+            self.isLoading = true
+            EdamamManager.shared.fetchRecipesFromApi(self) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let fetchedRecipes):
+                        self.recipes = fetchedRecipes
+                        self.isLoading = false
+                    case .failure(let error):
+                        print("Error fetching recipes: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+        
+    }
+    
 }
