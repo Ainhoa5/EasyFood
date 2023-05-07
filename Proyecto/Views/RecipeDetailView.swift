@@ -8,33 +8,30 @@ struct RecipeDetailView: View {
     @State private var showDetails: [Bool] = Array(repeating: false, count: 7)
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack{
-                Color(hex: "#f9f9f9")
-                    .edgesIgnoringSafeArea(.all) // Make the color fill the entire screen
-                ScrollView {
-                    ZStack(alignment: .center) {
+            ScrollView {
+                VStack {
+                    HStack(alignment: .top) {
                         if let imageURL = URL(string: recipe.image) {
                             URLImage(imageURL) { image in
                                 image
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
-                                    .frame(width: UIScreen.main.bounds.width, height: geometry.size.height * 0.6) // Set a fixed height for the image
+                                    .frame(width: UIScreen.main.bounds.width)
                                     .clipped()
                             }
-                            ContentOverlay(recipe: recipe)
-                                .offset(y: geometry.size.height * 0.4 - 140) // Adjust the offset based on the available space
-                                .padding(.bottom, 200)
+                            .edgesIgnoringSafeArea(.all) // Ignore safe area edges for the image
                         }
                     }
+                    ContentOverlay(recipe: recipe)
+                        .padding(.bottom, 100)
                 }
-                .edgesIgnoringSafeArea(.all) // Ignore the top safe area
             }
         }
-    }
 }
 
-struct ContentOverlay: View {let recipe: Recipe
+struct ContentOverlay: View { let recipe: Recipe
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var firebaseManager: FirebaseManager
     
     init(recipe: Recipe) {
         self.recipe = recipe
@@ -47,19 +44,40 @@ struct ContentOverlay: View {let recipe: Recipe
                     .fontWeight(.bold)
                     .padding(40)
                 
-                Button(action: {
-                    if let url = URL(string: recipe.url) {
-                        UIApplication.shared.open(url)
+                VStack{
+                    Button(action: { // LINK
+                        if let url = URL(string: recipe.url) {
+                            UIApplication.shared.open(url)
+                        }
+                    }) {
+                        Image(systemName: "link.circle")
+                            .resizable()
+                            .frame(width: 40, height: 40)
+                            .foregroundColor(.white)
+                            .padding()
                     }
-                }) {
-                    Image(systemName: "link.circle")
-                        .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(.green)
-                        .padding()
+                    
+                    Button(action: { // SAVE BUTTON
+                        if appState.isRecipeSaved(recipe) {
+                            if let existingRecipe = appState.savedRecipes.first(where: { $0.label == recipe.label }) {
+                                appState.savedRecipes.remove(existingRecipe)
+                                firebaseManager.removeRecipe(existingRecipe)
+                            }
+                        } else {
+                            appState.savedRecipes.insert(recipe)
+                            firebaseManager.saveRecipe(recipe)
+                        }
+                    }) {
+                        Image(systemName: appState.isRecipeSaved(recipe) ? "bookmark.fill" : "bookmark")
+                            .foregroundColor(.white)
+                            .font(.system(size: 30))
+                            .padding()
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
                 }
+                
             }
-            .background(Color(hex: "#E8E8E8"))
+            .background(Color(hex: "#A99A9A"))
             
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading, spacing: 10) {
@@ -69,9 +87,13 @@ struct ContentOverlay: View {let recipe: Recipe
                     
                     ForEach(recipe.ingredientLines, id: \.self) { line in
                         Text("• \(line)")
+                            .lineLimit(nil) // Remove the line limit
+                            .fixedSize(horizontal: false, vertical: true) // Allow the text to wrap vertically
                     }
                 }
+                .frame(width: UIScreen.main.bounds.width * 0.70)
                 .padding()
+
                 
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Diet Labels")
@@ -151,11 +173,8 @@ struct ContentOverlay: View {let recipe: Recipe
                 .padding(.bottom, 40)
             }
             
-            
-            
-            
         }
-        .background(RoundedRectangle(cornerRadius: 25).fill(Color.white)) // Set the background with a RoundedRectangle
+        .background(RoundedRectangle(cornerRadius: 25).fill(Color(hex: "#F4F4F4"))) // Set the background with a RoundedRectangle
         .clipShape(RoundedRectangle(cornerRadius: 25)) // Clip the VStack to match the RoundedRectangle shape
         .padding()
         
@@ -183,41 +202,6 @@ extension Color {
     }
 }
 
-struct ExpandableSectionView: View {
-    let title: String
-    let icon: String
-    let data: [String]
-    @Binding var isExpanded: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Button(action: {
-                withAnimation(.easeInOut) {
-                    isExpanded.toggle()
-                }
-            }) {
-                HStack {
-                    Image(systemName: icon)
-                        .foregroundColor(.gray)
-                        .padding(.trailing, 5)
-                    Text(title)
-                        .font(.headline)
-                        .bold()
-                    Spacer()
-                    Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            if isExpanded {
-                ForEach(data, id: \.self) { value in
-                    Text("• \(value)")
-                }
-            }
-        }
-    }
-}
-// Add this code at the bottom of your RecipeDetailView.swift file
 
 struct RecipeDetailView_Previews: PreviewProvider {
     static var previews: some View {

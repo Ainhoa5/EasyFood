@@ -15,9 +15,9 @@ class AppState: ObservableObject {
     
     // MARK: - STATIC data
     @Published var ingredients: [Ingredient] = [
-        Ingredient(name: "Pasta", image: "cheese"),
-        Ingredient(name: "Chicken", image: "cheese"),
-        Ingredient(name: "Garlic", image: "cheese"),
+        Ingredient(name: "Pasta", image: "pasta"),
+        Ingredient(name: "Chicken", image: "chicken"),
+        Ingredient(name: "Garlic", image: "garlic"),
         Ingredient(name: "Cheese", image: "cheese"),
     ] // Available ingredients
     @Published var mealTypes: [RecipeTypes] = [

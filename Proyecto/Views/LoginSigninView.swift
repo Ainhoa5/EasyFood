@@ -62,7 +62,6 @@ struct LoginSignupView: View {
             if !errorMessage.isEmpty {
                 Text(errorMessage)
                     .foregroundColor(.red)
-                    .font(.caption)
                     .padding(.bottom)
             }
             
@@ -74,6 +73,7 @@ struct LoginSignupView: View {
                             presentationMode.wrappedValue.dismiss() // dismiss view
                             self.onSuccess() // Call the onSuccess closure
                         } else {
+                            print("ntl")
                             errorMessage = "Incorrect email or password"
                         }
                     }

@@ -37,6 +37,8 @@ struct SavedRecipesView: View {
                 }
             }
             .navigationTitle("Saved Recipes")
+            .navigationBarTitleDisplayMode(.inline)
+            .listStyle(PlainListStyle())
         }
     }
 }
