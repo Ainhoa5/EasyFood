@@ -26,6 +26,7 @@
 		579D31DF29D0949600EA6D83 /* EdamamCredentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 576D5CB429D084B700B94363 /* EdamamCredentials.plist */; };
 		57A0D80129B28C3800579FC3 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A0D80029B28C3800579FC3 /* FirebaseManager.swift */; };
 		57A2099E29DEFD8100289F08 /* RecipeTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A2099D29DEFD8100289F08 /* RecipeTypes.swift */; };
+		57BBEF762A080093001271F9 /* Edamam.plist in Resources */ = {isa = PBXBuildFile; fileRef = 57BBEF752A080093001271F9 /* Edamam.plist */; };
 		57C05D9C29B29407002E3A2E /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C05D9B29B29406002E3A2E /* HomeView.swift */; };
 		57CB94F629DC74D000018207 /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 57CB94F529DC74D000018207 /* URLImage */; };
 		57CDD52129D0A7F3000F63D3 /* SwiftDotEnv in Frameworks */ = {isa = PBXBuildFile; productRef = 57CDD52029D0A7F3000F63D3 /* SwiftDotEnv */; };
@@ -53,6 +54,7 @@
 		5796426029B151060063C628 /* SavedIngredientsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedIngredientsView.swift; sourceTree = "<group>"; };
 		57A0D80029B28C3800579FC3 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		57A2099D29DEFD8100289F08 /* RecipeTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeTypes.swift; sourceTree = "<group>"; };
+		57BBEF752A080093001271F9 /* Edamam.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Edamam.plist; sourceTree = "<group>"; };
 		57C05D9B29B29406002E3A2E /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		57DF244C29B4C7A600FFEA99 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		57EFFB1829B3698E009C7BCF /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				5776C7BB299EA3FD00F6E989 /* Assets.xcassets */,
 				5776C7BD299EA3FD00F6E989 /* Preview Content */,
 				578AFC0E29DB504F00F5F631 /* aux.geojson */,
+				57BBEF752A080093001271F9 /* Edamam.plist */,
 			);
 			path = Proyecto;
 			sourceTree = "<group>";
@@ -219,6 +222,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				579D31DF29D0949600EA6D83 /* EdamamCredentials.plist in Resources */,
+				57BBEF762A080093001271F9 /* Edamam.plist in Resources */,
 				5776C7BF299EA3FD00F6E989 /* Preview Assets.xcassets in Resources */,
 				5776C7BC299EA3FD00F6E989 /* Assets.xcassets in Resources */,
 				5768A48D29B343AA006506F9 /* GoogleService-Info.plist in Resources */,

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+   Edamam.plist
+   Proyecto
+
+   Created by CIFP Villa De Aguimes on 7/5/23.
+   Copyright (c) 2023 ___ORGANIZATIONNAME___. All rights reserved.
+-->
+<plist version="1.0">
+<dict>
+    <key>API_ID</key>
+    <string>7036473e</string>
+    <key>API_KEY</key>
+    <string>30ed7f012bab9748501c3bf3b109b2da</string>
+</dict>
+</plist>
