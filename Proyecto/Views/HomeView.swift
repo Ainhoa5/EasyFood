@@ -6,92 +6,49 @@
 //
 
 import SwiftUI
-import URLImage
 
 struct HomeView: View {
     @EnvironmentObject var appState: AppState
-    @State private var recipes: [Recipe] = [] // Initialize as an empty list
-    //@State private var savedRecipes: Set<Recipe> = [] // list of saved recipes on this view
-    //@State private var ingredients: [String] = [] // saved ingredients
-    let firebaseManager = FirebaseManager() // Firebase manager
-    
-    
-    
-    
+
     var body: some View {
         NavigationView {
-            List(recipes) { recipe in
-                NavigationLink(destination: RecipeDetailView(recipe: recipe)) {
-                    HStack {
-                        if let imageURL = URL(string: recipe.image) {
-                            URLImage(imageURL) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            }
-                            .frame(width: 100, height: 100)
-                            .clipped()
-                        } else {
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray)
-                                .frame(width: 100, height: 100)
-                        }
-                        
-                        
-                        Spacer()
-                        Button(action: { // Save recipe button
-                            if appState.savedRecipes.contains(recipe) { // if the recipe is already on the list
-                                appState.savedRecipes.remove(recipe) // remove from local list
-                                firebaseManager.removeRecipe(recipe) // remove from firebase document
-                            } else {
-                                appState.savedRecipes.insert(recipe) // save in local list
-                                firebaseManager.saveRecipe(recipe) // save in firebase document
-                            }
-                            
-                        }) {
-                            Image(systemName: appState.savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark") // change icon depending if the recipe is saved or not
-                                .foregroundColor(.blue)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        Spacer()
-                        Text(recipe.label)
-                            .font(.headline)
-                    }
+            if appState.isLoading {
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .primary))
+                        .frame(width: 50, height: 50)
+                    Text("Loading recipes...")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.pink)
                 }
-            }
-            .onAppear {
-                if !appState.fetchedRecipes {
-                    print("hehe")
-                    appState.fetchAndStoreRecipes()
-                    appState.fetchedRecipes = true
+            } else if appState.recipes.isEmpty {
+                VStack {
+                    Image(systemName: "xmark.octagon")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(.pink)
+                    Text("No recipes available.")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.pink)
+                    Text("We are sorry, we couldn't find any recipes matching your filters, maybe try some new ingredient if you haven't yet!")
+                        .font(.title3)
+                        .foregroundColor(Color.gray)
+                }.padding()
+
+            } else {
+                List(appState.recipes) { recipe in
+                    RecipeCell(recipe: recipe, firebaseManager: FirebaseManager())
                 }
-                
-                
-                if appState.shouldUpdateRecipes {
-                    fetchRecipesAndDisplay()
-                    appState.shouldUpdateRecipes = false
-                }
-                
-            }
-            .navigationTitle("Recipes")
-        }
-    }
-    func fetchRecipesAndDisplay() {
-        EdamamManager.shared.fetchRecipes(appState) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let fetchedRecipes):
-                    // Update your UI with the fetched recipes
-                    self.recipes = fetchedRecipes
-                case .failure(let error):
-                    // Handle the error
-                    print("Error fetching recipes: \(error.localizedDescription)")
-                }
+                .navigationTitle("Recipes")
+                .navigationBarTitleDisplayMode(.inline)
+                .listStyle(PlainListStyle())
             }
         }
+        .onAppear{
+            appState.fetchRecipesAndDisplay()
+        }
+        .padding()
     }
 }
-
-
-
-

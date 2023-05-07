@@ -9,7 +9,6 @@ import URLImage
 
 struct SavedRecipesView: View {
     @EnvironmentObject var appState: AppState
-    @State private var savedRecipes: [String] = [] // savedRecipes
     
     var body: some View {
         NavigationView {
@@ -38,13 +37,6 @@ struct SavedRecipesView: View {
                 }
             }
             .navigationTitle("Saved Recipes")
-            .onAppear {
-                
-            }
         }
     }
 }
-
-
-
-

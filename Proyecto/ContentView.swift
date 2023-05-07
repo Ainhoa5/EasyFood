@@ -30,11 +30,11 @@ struct ContentView: View {
                             }
                         SavedIngredientsView()
                             .tabItem {
-                                Label("Saved Ingredients", systemImage: "cart")
+                                Label("Ingredients", systemImage: "cart")
                             }
-                        UserView()
+                        FilterView()
                             .tabItem {
-                                Label("User", systemImage: "person.circle")
+                                Label("Filters", systemImage: "slider.horizontal.3")
                             }
                     } else {
                         LoginSignupView(onSuccess: { // display LoginSignupView so the user can create an account / log in
@@ -43,15 +43,6 @@ struct ContentView: View {
                     }
                 }
                 .environmentObject(appState)
-                .navigationBarTitle("My App")
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(trailing: Button(action: { // add log out button
-                    FirebaseManager.shared.signOut()
-                    isLoggedIn = false
-                }) {
-                    Text("Log Out")
-                })
-                
             }
         }
     }
