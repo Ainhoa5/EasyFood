@@ -1,0 +1,161 @@
+{
+   "q":"chicken",
+   "from":0,
+   "to":1,
+   "more":true,
+   "count":7000,
+   "hits":[
+      {
+         "recipe":{
+            "uri":"http://www.edamam.com/ontologies/edamam.owl#recipe_b79327d05b8e5b838ad6cfd9576b30b6",
+            "label":"Chicken Vesuvio",
+            "image":"imageURL",
+            "source":"Serious Eats",
+            "url":"http://www.seriouseats.com/recipes/2011/12/chicken-vesuvio-recipe.html",
+            "shareAs":"http://www.edamam.com/recipe/chicken-vesuvio-b79327d05b8e5b838ad6cfd9576b30b6/chicken",
+            "yield":4.0,
+            "dietLabels":[
+               "Low-Carb"
+            ],
+            "healthLabels":[
+               "Mediterranean",
+               "Dairy-Free",
+               "Gluten-Free"
+            ],
+            "cautions":[
+               "Sulfites"
+            ],
+            "ingredientLines":[
+               "1/2 cup olive oil",
+               "5 cloves garlic, peeled",
+               "2 large russet potatoes, peeled and cut into chunks",
+               "1 3-4 pound chicken, cut into 8 pieces (or 3 pound chicken legs)",
+               "3/4 cup white wine",
+               "3/4 cup chicken stock",
+               "3 tablespoons chopped parsley",
+               "1 tablespoon dried oregano",
+               "Salt and pepper",
+               "1 cup frozen peas, thawed"
+            ],
+            "ingredients":[
+               {
+                  "text":"1/2 cup olive oil",
+                  "quantity":0.5,
+                  "measure":"cup",
+                  "food":"olive oil",
+                  "weight":108.0,
+                  "foodCategory":"Oils",
+                  "foodId":"food_b1d1icuad3iktrbqby0hiagafaz7",
+                  "image":"https://www.edamam.com/food-img/4d6/4d651eaa8a353647746290c7a9b29d84.jpg"
+               },
+               {
+                  "text":"5 cloves garlic, peeled",
+                  "quantity":5.0,
+                  "measure":"clove",
+                  "food":"garlic",
+                  "weight":15.0,
+                  "foodCategory":"vegetables",
+                  "foodId":"food_avtcmx6bgjv1jvay6s6stan8dnyp",
+                  "image":"https://www.edamam.com/food-img/6ee/6ee142951f48aaf94f4312409f8d133d.jpg"
+               }
+            ],
+            "calories":4228.043058200812,
+            "totalWeight":2976.8664549004047,
+            "totalTime":60.0,
+            "cuisineType":[
+               "italian"
+            ],
+            "mealType":[
+               "lunch/dinner"
+            ],
+            "dishType":[
+               "main course"
+            ],
+            "totalNutrients":{
+               "ENERC_KCAL":{
+                  "label":"Energy",
+                  "quantity":4228.043058200812,
+                  "unit":"kcal"
+               },
+               "FAT":{
+                  "label":"Fat",
+                  "quantity":274.4489059026023,
+                  "unit":"g"
+               }
+            },
+            "totalDaily":{
+               "ENERC_KCAL":{
+                  "label":"Energy",
+                  "quantity":211.4021529100406,
+                  "unit":"%"
+               },
+               "FAT":{
+                  "label":"Fat",
+                  "quantity":422.2290860040035,
+                  "unit":"%"
+               }
+            },
+            "digest":[
+               {
+                  "label":"Fat",
+                  "tag":"FAT",
+                  "schemaOrgTag":"fatContent",
+                  "total":274.4489059026023,
+                  "hasRDI":true,
+                  "daily":422.2290860040035,
+                  "unit":"g",
+                  "sub":[
+                     {
+                        "label":"Saturated",
+                        "tag":"FASAT",
+                        "schemaOrgTag":"saturatedFatContent",
+                        "total":62.497618998656044,
+                        "hasRDI":true,
+                        "daily":312.48809499328024,
+                        "unit":"g"
+                     },
+                     {
+                        "label":"Trans",
+                        "tag":"FATRN",
+                        "schemaOrgTag":"transFatContent",
+                        "total":1.047163345382,
+                        "hasRDI":false,
+                        "daily":0.0,
+                        "unit":"g"
+                     }
+                  ]
+               },
+               {
+                  "label":"Carbs",
+                  "tag":"CHOCDF",
+                  "schemaOrgTag":"carbohydrateContent",
+                  "total":175.96206666631727,
+                  "hasRDI":true,
+                  "daily":58.65402222210575,
+                  "unit":"g",
+                  "sub":[
+                     {
+                        "label":"Carbs (net)",
+                        "tag":"CHOCDF.net",
+                        "schemaOrgTag":null,
+                        "total":156.13025633549864,
+                        "hasRDI":false,
+                        "daily":0.0,
+                        "unit":"g"
+                     },
+                     {
+                        "label":"Fiber",
+                        "tag":"FIBTG",
+                        "schemaOrgTag":"fiberContent",
+                        "total":19.83181033081862,
+                        "hasRDI":true,
+                        "daily":79.32724132327448,
+                        "unit":"g"
+                     }
+                  ]
+               }
+            ]
+         }
+      }
+   ]
+}

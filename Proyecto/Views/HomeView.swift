@@ -8,51 +8,47 @@
 import SwiftUI
 
 struct HomeView: View {
-    let recipes: [Recipe]
-    @State private var savedRecipes: Set<Recipe> = []
-    let firebaseManager = FirebaseManager()
-    
+    @EnvironmentObject var appState: AppState
+
     var body: some View {
-        List(recipes) { recipe in
-            VStack(alignment: .leading) {
-                Image(recipe.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: UIScreen.main.bounds.width - 32, height: 200)
-                    .clipped()
-                    .cornerRadius(10)
-                
-                    Button(action: {
-                        if !savedRecipes.contains(recipe) {
-                            savedRecipes.insert(recipe)
-                            firebaseManager.saveRecipe(recipe)
-                        }
-                    }) {
-                        Image(systemName: savedRecipes.contains(recipe) ? "bookmark.fill" : "bookmark")
-                            .foregroundColor(.blue)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                    
-                    Spacer()
-                
-                
-                Text(recipe.title)
-                    .font(.headline)
-                
-                Text(recipe.summary)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .padding(.top, 4)
+        NavigationView {
+            if appState.isLoading {
+                VStack {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .primary))
+                        .frame(width: 50, height: 50)
+                    Text("Loading recipes...")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.pink)
+                }
+            } else if appState.recipes.isEmpty {
+                VStack {
+                    Image(systemName: "xmark.octagon")
+                        .resizable()
+                        .frame(width: 50, height: 50)
+                        .foregroundColor(.pink)
+                    Text("No recipes available.")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(Color.pink)
+                    Text("We are sorry, we couldn't find any recipes matching your filters, maybe try some new ingredient if you haven't yet!")
+                        .font(.title3)
+                        .foregroundColor(Color.gray)
+                }.padding()
+
+            } else {
+                List(appState.recipes) { recipe in
+                    RecipeCell(recipe: recipe, firebaseManager: FirebaseManager())
+                }
+                .navigationTitle("Recipes")
+                .navigationBarTitleDisplayMode(.inline)
+                .listStyle(PlainListStyle())
             }
         }
-        .listStyle(.plain)
-        .onAppear {
-            firebaseManager.getSavedRecipes { recipes in
-                self.savedRecipes = Set(recipes)
-            }
+        .onAppear{
+            appState.fetchRecipesAndDisplay()
         }
+        .padding()
     }
 }
-
-
