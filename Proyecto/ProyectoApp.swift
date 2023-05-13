@@ -10,6 +10,7 @@ import Firebase
 
 @main
 struct ProyectoApp: App {
+    @StateObject var firebaseManager = FirebaseManager()
     init(){
         FirebaseApp.configure()
     }
@@ -17,6 +18,7 @@ struct ProyectoApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(firebaseManager)
         }
     }
 }
